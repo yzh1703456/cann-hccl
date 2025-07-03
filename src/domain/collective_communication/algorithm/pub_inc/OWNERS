@@ -1,0 +1,12 @@
+approvers:
+- yinding
+- philo_yan
+- yanyefeng
+
+reviewers:
+- yinding
+- philo_yan
+- yanyefeng
+
+options:
+ no_parent_owners: true

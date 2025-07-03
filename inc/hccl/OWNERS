@@ -1,0 +1,12 @@
+approvers:
+- yanzhenghang
+- philo_yan
+- yanyefeng
+
+reviewers:
+- yanzhenghang
+- philo_yan
+- yanyefeng
+
+options:
+ no_parent_owners: true
