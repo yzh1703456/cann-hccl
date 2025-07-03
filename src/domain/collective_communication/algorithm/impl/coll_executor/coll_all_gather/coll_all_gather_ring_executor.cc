@@ -144,6 +144,10 @@ HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &e
     u64 hdCount = hdSize / perDataSize;
 
     HCCL_INFO("hdCount: %d\n", hdCount);
+    HCCL_INFO("hdCount: %d\n", hdCount);
+    HCCL_INFO("hdCount: %d\n", hdCount);
+    HCCL_INFO("hdCount: %d\n", hdCount);
+    HCCL_INFO("hdCount: %d\n", hdCount);
 
     bool isMultiNic = topoType_ == TopoType::TOPO_TYPE_8P_RING && nicList.size() != DEVICE_EIGHT;
     bool innRunRet = isMultiNic && (iterNic == nicList.end());
