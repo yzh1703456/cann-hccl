@@ -45,6 +45,10 @@ HcclResult CalcRingTransportReq::CalcTransportRequest(const std::string &tag, Tr
         u32 rankSize = subCommPlaneVector_[ringIndex].size();
         SingleSubCommTransport &subCommTransport = commTransport[ringIndex];
         subCommTransport.transportRequests.resize(rankSize);
+
+
+
+
         // 只有一张卡时不需要建链
         if (rankSize == HCCL_RANK_SIZE_EQ_ONE) {
             HCCL_INFO("comm base needn't to create links, rankSize_[%u].", rankSize);

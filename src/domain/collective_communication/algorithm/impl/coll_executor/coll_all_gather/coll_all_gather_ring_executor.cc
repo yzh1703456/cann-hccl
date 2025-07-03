@@ -142,9 +142,8 @@ HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &e
         hdSize = inputMemSize * level0RankSize;
     }
     u64 hdCount = hdSize / perDataSize;
-
-    HCCL_ERROR("hdCount: %d\n", hdCount);
-
+    CHK_PRT_RET(hdCount == 0,
+        HCCL_ERROR("[CollAllGatherRingExecutor][KernelRun]hdCount[%llu] is invalid", hdCount), HCCL_E_PARA);
     bool isMultiNic = topoType_ == TopoType::TOPO_TYPE_8P_RING && nicList.size() != DEVICE_EIGHT;
     bool innRunRet = isMultiNic && (iterNic == nicList.end());
     if (!innRunRet) { // 满足以下条件, 不做server间通信: 1. 8P ring的拓扑 2. 网口不满配 3. 当前device不出网口
