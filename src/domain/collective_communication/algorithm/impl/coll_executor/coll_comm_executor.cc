@@ -1583,7 +1583,7 @@ std::vector<std::vector<u32>>  CollCommExecutor::GetRingsOrderByTopoType(u32 ran
         // std::vector<u32> tmpLevel03 = { 0, 4, 6, 7, 5, 1, 3, 2 }; // 环3
 
         std::vector<u32> tmpLevel00 = { 0, 1, 2, 3 }; // 环0
-        std::vector<u32> tmpLevel01 = { 0, 3, 2, 1 }; // 环1
+        //std::vector<u32> tmpLevel01 = { 0, 3, 2, 1 }; // 环1
         std::vector<u32> tmpLevel02 = { 0, 2, 3, 1 }; // 环2
         std::vector<u32> tmpLevel03 = { 0, 1, 3, 2 }; // 环3
 
