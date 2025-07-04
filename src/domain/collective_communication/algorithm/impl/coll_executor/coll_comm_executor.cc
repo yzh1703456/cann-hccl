@@ -1769,6 +1769,25 @@ std::vector<std::vector<Slice> > CollCommExecutor::PrepareMultiRingSlice(const s
     std::vector<std::vector<Slice> > mutliRingsSlices;
     std::vector<std::vector<Slice> > mutliSegsSlices;
     u32 ringCount = multiRingsOrder.size();
+    //输出multiRingsOrder
+    HCCL_ERROR("[CollCommExecutor][PrepareMultiRingSlice] multiRingsOrder size[%zu]", multiRingsOrder.size());
+    std::string multiRingsOrderStr = "[";
+    for (size_t i = 0; i < multiRingsOrder.size(); ++i) {
+        multiRingsOrderStr += "[";
+        for (size_t j = 0; j < multiRingsOrder[i].size(); ++j) {
+            multiRingsOrderStr += std::to_string(multiRingsOrder[i][j]);
+            if (j != multiRingsOrder[i].size() - 1) {
+                multiRingsOrderStr += ",";
+            }
+        }
+        multiRingsOrderStr += "]";
+        if (i != multiRingsOrder.size() - 1) {
+            multiRingsOrderStr += ",";
+        }
+    }
+    multiRingsOrderStr += "]";
+    HCCL_ERROR("[PrepareMultiRingSlice] multiRingsOrder: %s", multiRingsOrderStr.c_str());
+    
     // 单环场景不应该走入此流程，需要在函数外校验
     CHK_PRT_RET(ringCount <= 1, HCCL_ERROR("[CollCommExecutor][PrepareMultiRingSlice] ringCount[%u] <= 1",
         ringCount), mutliRingsSlices);
