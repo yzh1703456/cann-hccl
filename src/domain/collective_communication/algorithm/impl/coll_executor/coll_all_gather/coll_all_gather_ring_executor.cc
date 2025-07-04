@@ -114,11 +114,13 @@ HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &e
     CHK_RET(PrepareAllgatherSlice(sliceNum, inputMemSize, dataSegsSlice));
 
     //  多环数据切分
-    if (ringNum == LEVEL0_PLANE_NUM_IN_8PRING) {
-        multRingsSliceZero = PrepareMultiRingSlice(dataSegsSlice, param.tag);
-    } else {
-        multRingsSliceZero.push_back(dataSegsSlice);
-    }
+    // if (ringNum == LEVEL0_PLANE_NUM_IN_8PRING) {
+    //     multRingsSliceZero = PrepareMultiRingSlice(dataSegsSlice, param.tag);
+    // } else {
+    //     multRingsSliceZero.push_back(dataSegsSlice);
+    // }
+    multRingsSliceZero = PrepareMultiRingSlice(dataSegsSlice, param.tag);
+    
     CHK_PRT_RET(multRingsSliceZero.size() != ringNum,
         HCCL_ERROR("[CollAllGatherRingExecutor][KernelRun]ringNum[%u] != multRingsSliceZero size[%zu]",
             ringNum, multRingsSliceZero.size()), HCCL_E_INTERNAL);

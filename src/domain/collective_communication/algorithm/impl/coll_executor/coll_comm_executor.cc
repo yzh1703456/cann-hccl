@@ -1750,25 +1750,12 @@ std::vector<std::vector<Slice> > CollCommExecutor::PrepareMultiRingSlice(const s
     // 获取每个ring上设备的排布顺序，顺序均为deviceID
     sort(nicList.begin(), nicList.end());
 
-    //输出niclist
-    HCCL_ERROR("[CollCommExecutor][PrepareMultiRingSlice] nicList size[%zu]", nicList.size());
-    std::string nicStr = "[";
-    for (size_t i = 0; i < nicList.size(); ++i) {
-        nicStr += std::to_string(nicList[i]);
-        if (i != nicList.size() - 1) {
-            nicStr += ",";
-        }
-    }
-    nicStr += "]";
-
-    HCCL_ERROR("[PrepareMultiRingSlice] nicList sorted: %s", nicStr.c_str());
-
-
     //std::vector<std::vector<u32> > multiRingsOrder = GetRingsOrderByTopoType(ranksSize, topoType_, nicList);
     std::vector<std::vector<u32> > multiRingsOrder = GetRingsOrderByTopoType(ranksSize, TopoType::TOPO_TYPE_8P_RING, nicList);
     std::vector<std::vector<Slice> > mutliRingsSlices;
     std::vector<std::vector<Slice> > mutliSegsSlices;
     u32 ringCount = multiRingsOrder.size();
+    
     //输出multiRingsOrder
     HCCL_ERROR("[CollCommExecutor][PrepareMultiRingSlice] multiRingsOrder size[%zu]", multiRingsOrder.size());
     std::string multiRingsOrderStr = "[";
