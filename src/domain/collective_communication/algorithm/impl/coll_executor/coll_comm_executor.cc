@@ -182,6 +182,20 @@ HcclResult CollCommExecutor::MultiRingAllGather(const std::string &tag, DeviceMe
     // 拿到ring环映射关系
     SubCommInfo level0ZeroCommInfo = GetSubCommInfo(COMM_LEVEL0, COMM_INDEX_0);
     auto nicList = topoAttr_.nicList;
+    
+    //输出niclist的逻辑
+    std::string nicStr = "nicList = [";
+    for (size_t i = 0; i < nicList.size(); ++i) {
+        nicStr += std::to_string(nicList[i]);
+        if (i != nicList.size() - 1) {
+            nicStr += ", ";
+        }
+    }
+    nicStr += "]";
+
+    HCCL_ERROR("[Prepare][MultiRingSlice] %s", nicStr.c_str());
+
+
     std::vector<std::vector<u32>> multiRingsOrder =
         GetRingsOrderByTopoType(level0ZeroCommInfo.localRankSize, TopoType::TOPO_TYPE_8P_RING, nicList);
 
@@ -1578,9 +1592,9 @@ std::vector<std::vector<u32>>  CollCommExecutor::GetRingsOrderByTopoType(u32 ran
     if (topoType == TopoType::TOPO_TYPE_8P_RING) { // 4 ring 场景
         //每个环的排序是按照设备物理ID进行的
         std::vector<u32> tmpLevel00 = { 0, 1, 2, 6, 5, 4, 7, 3 }; // 环0
-        std::vector<u32> tmpLevel01 = { 0, 3, 7, 4, 5, 6, 2, 1 }; // 环1
-        std::vector<u32> tmpLevel02 = { 0, 2, 3, 1, 5, 7, 6, 4 }; // 环2
-        std::vector<u32> tmpLevel03 = { 0, 4, 6, 7, 5, 1, 3, 2 }; // 环3
+        // std::vector<u32> tmpLevel01 = { 0, 3, 7, 4, 5, 6, 2, 1 }; // 环1
+        // std::vector<u32> tmpLevel02 = { 0, 2, 3, 1, 5, 7, 6, 4 }; // 环2
+        // std::vector<u32> tmpLevel03 = { 0, 4, 6, 7, 5, 1, 3, 2 }; // 环3
 
         // std::vector<u32> tmpLevel00 = { 0, 1, 2, 3 }; // 环0
         // std::vector<u32> tmpLevel01 = { 0, 3, 2, 1 }; // 环1
@@ -1589,9 +1603,9 @@ std::vector<std::vector<u32>>  CollCommExecutor::GetRingsOrderByTopoType(u32 ran
 
         // 填充8pring 多环的comm level0 四个环的顺序
         multiRingOrder.push_back(tmpLevel00);
-        multiRingOrder.push_back(tmpLevel01);
-        multiRingOrder.push_back(tmpLevel02);
-        multiRingOrder.push_back(tmpLevel03);
+        // multiRingOrder.push_back(tmpLevel01);
+        // multiRingOrder.push_back(tmpLevel02);
+        // multiRingOrder.push_back(tmpLevel03);
     } else if (topoType == TopoType::TOPO_TYPE_NP_DOUBLE_RING) { // 2 ring 场景
         std::vector<u32> tmpLevel00;   // 环0
         std::vector<u32> tmpLevel01;  // 环1
