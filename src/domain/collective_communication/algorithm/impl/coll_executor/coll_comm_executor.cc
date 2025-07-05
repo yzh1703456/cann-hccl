@@ -219,6 +219,7 @@ HcclResult CollCommExecutor::MultiRingAllGather(const std::string &tag, DeviceMe
         if (ringIndex != (ringNum - 1)) { // 最后一个环是主stream，所以这里减1，符合条件的走从stream
             if (!topoMatcher_->GetExternalInputHcclEnableFfts() &&
                 workflowMode_ == HcclWorkflowMode::HCCL_WORKFLOW_MODE_OP_BASE) {
+                HCCL_ERROR("[CollCommExecutor][MultiRingAllGather]stream1");
                 if (opInfo != nullptr) {
                     algResResp_->threadManage[ringIndex]->Prepare(
                         outputMem, outputMem, inputMem, count, dataType,
@@ -228,6 +229,7 @@ HcclResult CollCommExecutor::MultiRingAllGather(const std::string &tag, DeviceMe
                         ringIndex, ExecutorType::ALLGATHER_RING_DIRECT, 0, opInfo, subStreamsInOneRing,
                         mainSignalsInOneRing, subSignalsInOneRing, rankOrder, userMemOutputSlices);
                 } else {
+                    HCCL_ERROR("[CollCommExecutor][MultiRingAllGather]stream2");
                     algResResp_->threadManage[ringIndex]->Prepare(outputMem, outputMem, inputMem, count, dataType,
                         algResResp_->slaveStreams[ringIndex], HcclReduceOp::HCCL_REDUCE_RESERVED, LEVEL0_BRIDGE_RANK_ID,
                         singleRingSliceZero, baseOffset, ringNics[ringIndex], tag, profStage,
@@ -236,6 +238,7 @@ HcclResult CollCommExecutor::MultiRingAllGather(const std::string &tag, DeviceMe
                 }
                 algResResp_->threadManage[ringIndex]->NotifyStart();    // 给线程发信号启动处理
             } else {
+                HCCL_ERROR("[CollCommExecutor][MultiRingAllGather]stream3");
                 ret = LocalNotify::Wait(algResResp_->slaveStreams[ringIndex], dispatcher_,
                     algResResp_->notifiesAux[ringIndex], profStage);
                 CHK_PRT_RET(ret != HCCL_SUCCESS,
