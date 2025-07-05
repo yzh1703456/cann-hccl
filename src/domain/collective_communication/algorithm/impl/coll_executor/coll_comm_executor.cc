@@ -1812,8 +1812,8 @@ std::vector<std::vector<Slice> > CollCommExecutor::PrepareMultiRingSlice(const s
             u32 deviceIdx = multiRingsOrder[ringIndex][segsIndex];
             std::vector<u32>::iterator iterRank = std::find(nicList.begin(), nicList.end(), deviceIdx);
             if (iterRank != nicList.end()) {
-                //rankList.push_back(segsIndex);
-                rankList.push_back(deviceIdx); // 使用设备ID作为rank
+                rankList.push_back(segsIndex);
+                //rankList.push_back(deviceIdx); // 使用设备ID作为rank
                 u32 nicPosition = distance(nicList.begin(), iterRank);
                 for (u32 chunkIdx = 0; chunkIdx < chunkSize; chunkIdx++) {
                     Slice tempSlice = mutliSegsSlices[nicPosition * chunkSize + chunkIdx][ringIndex];
@@ -1826,6 +1826,19 @@ std::vector<std::vector<Slice> > CollCommExecutor::PrepareMultiRingSlice(const s
         singleRingSlices.clear();
         rankList.clear();
     }
+    
+    // ⬇️ 打印 ringRankList
+    for (u32 ringIdx = 0; ringIdx < ringRankList.size(); ++ringIdx) {
+        std::string rankStr = "[";
+        for (u32 i = 0; i < ringRankList[ringIdx].size(); ++i) {
+            rankStr += std::to_string(ringRankList[ringIdx][i]);
+            if (i != ringRankList[ringIdx].size() - 1) {
+                rankStr += ",";
+            }
+        }
+        rankStr += "]";
+        HCCL_ERROR("[Prepare][MultiRingSlice] ringIndex[%u] rankList: %s", ringIdx, rankStr.c_str());
+    }
 
     ret = SetRingNics(tag, ringRankList);
     if (ret != HCCL_SUCCESS) {
@@ -1833,6 +1846,17 @@ std::vector<std::vector<Slice> > CollCommExecutor::PrepareMultiRingSlice(const s
         std::vector<std::vector<Slice> > emptySlice;
         return emptySlice;
     }
+
+    // 打印每个 ring 的分片信息 multiRingsSlices
+    for (u32 ringIdx = 0; ringIdx < multiRingsSlices.size(); ++ringIdx) {
+        const auto &sliceList = multiRingsSlices[ringIdx];
+        for (u32 i = 0; i < sliceList.size(); ++i) {
+            const Slice &s = sliceList[i];
+            HCCL_ERROR("[Prepare][MultiRingSlice] ringIndex[%u] slice[%u]: offset[%llu], size[%llu]",
+                    ringIdx, i, s.offset, s.size);
+        }
+    }
+
     return mutliRingsSlices;
 }
 
