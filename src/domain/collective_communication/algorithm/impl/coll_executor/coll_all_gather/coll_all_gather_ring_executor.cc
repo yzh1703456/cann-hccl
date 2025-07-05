@@ -20,7 +20,7 @@ CollAllGatherRingExecutor::CollAllGatherRingExecutor(const HcclDispatcher dispat
 
 HcclResult CollAllGatherRingExecutor::CalcStreamNum(u32& streamNum)
 {
-    u32 totalStreamNum = 1U;
+    u32 totalStreamNum = 4U;
     if (algType_.algoLevel0 == AlgTypeLevel0::ALG_LEVEL0_8P_RING) {
         totalStreamNum = LEVEL0_PLANE_NUM_IN_8PRING;
     }
