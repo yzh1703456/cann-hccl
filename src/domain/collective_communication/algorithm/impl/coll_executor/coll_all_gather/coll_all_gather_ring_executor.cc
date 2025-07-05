@@ -91,7 +91,7 @@ HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &e
     u32 commIndex = level0CommInfo.localRank;
     //u32 commIndex = topoAttr_.devicePhyId;
     //输出topoAttr_.devicePhyId作为commIndex
-    HCCL_ERROR("[CollAllGatherRingExecutor][KernelRun]tag[%s] commIndex[%u], devicePhyId[%u]",
+    HCCL_ERROR("[CollAllGatherRingExecutor][KernelRun]tag[%s] commIndex[%u], devicePhy[%u]",
         param.tag.c_str(), commIndex, topoAttr_.devicePhyId);
 
     u32 level0RankSize = level0CommInfo.localRankSize;
