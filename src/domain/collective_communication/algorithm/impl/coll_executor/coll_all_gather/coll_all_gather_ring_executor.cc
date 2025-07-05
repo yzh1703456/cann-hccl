@@ -20,7 +20,7 @@ CollAllGatherRingExecutor::CollAllGatherRingExecutor(const HcclDispatcher dispat
 
 HcclResult CollAllGatherRingExecutor::CalcStreamNum(u32& streamNum)
 {
-    u32 totalStreamNum = 4U;
+    u32 totalStreamNum = 1U;
     if (algType_.algoLevel0 == AlgTypeLevel0::ALG_LEVEL0_8P_RING) {
         totalStreamNum = LEVEL0_PLANE_NUM_IN_8PRING;
     }
@@ -87,9 +87,9 @@ HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &e
     u32 ringNum = 4;
     CHK_RET(CheckCommSize(COMM_LEVEL0, ringNum));
     SubCommInfo level0CommInfo = GetSubCommInfo(COMM_LEVEL0, COMM_INDEX_0);
-    //u32 commIndex = (ringNum == LEVEL0_PLANE_NUM_IN_8PRING) ? topoAttr_.devicePhyId : level0CommInfo.localRank;
+    u32 commIndex = (ringNum == LEVEL0_PLANE_NUM_IN_8PRING) ? topoAttr_.devicePhyId : level0CommInfo.localRank;
     //u32 commIndex = level0CommInfo.localRank;
-    u32 commIndex = topoAttr_.devicePhyId;
+    //u32 commIndex = topoAttr_.devicePhyId;
     u32 level0RankSize = level0CommInfo.localRankSize;
 
     CHK_RET(CheckCommSize(COMM_LEVEL1, commIndex + 1));
