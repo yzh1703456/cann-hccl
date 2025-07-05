@@ -1576,7 +1576,7 @@ std::vector<std::vector<u32>>  CollCommExecutor::GetRingsOrderByTopoType(u32 ran
 {
     std::vector<std::vector<u32>> multiRingOrder;
     if (topoType == TopoType::TOPO_TYPE_8P_RING) { // 4 ring 场景
-        每个环的排序是按照设备物理ID进行的
+        //每个环的排序是按照设备物理ID进行的
         std::vector<u32> tmpLevel00 = { 0, 1, 2, 6, 5, 4, 7, 3 }; // 环0
         std::vector<u32> tmpLevel01 = { 0, 3, 7, 4, 5, 6, 2, 1 }; // 环1
         std::vector<u32> tmpLevel02 = { 0, 2, 3, 1, 5, 7, 6, 4 }; // 环2
