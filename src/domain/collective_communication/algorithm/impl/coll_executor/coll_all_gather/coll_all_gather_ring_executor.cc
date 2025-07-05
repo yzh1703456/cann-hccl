@@ -20,7 +20,7 @@ CollAllGatherRingExecutor::CollAllGatherRingExecutor(const HcclDispatcher dispat
 
 HcclResult CollAllGatherRingExecutor::CalcStreamNum(u32& streamNum)
 {
-    u32 totalStreamNum = 3U;
+    u32 totalStreamNum = 4U;
     if (algType_.algoLevel0 == AlgTypeLevel0::ALG_LEVEL0_8P_RING) {
         totalStreamNum = LEVEL0_PLANE_NUM_IN_8PRING;
     }
@@ -84,7 +84,7 @@ HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &e
     // u32 ringNum = (topoType_ == TopoType::TOPO_TYPE_8P_RING) ? LEVEL0_PLANE_NUM_IN_8PRING :
     //     LEVEL0_PLANE_NUM_IN_NPRING_SINGLE;
 
-    u32 ringNum = 3;
+    u32 ringNum = 4;
     CHK_RET(CheckCommSize(COMM_LEVEL0, ringNum));
     SubCommInfo level0CommInfo = GetSubCommInfo(COMM_LEVEL0, COMM_INDEX_0);
     //u32 commIndex = (ringNum == LEVEL0_PLANE_NUM_IN_8PRING) ? topoAttr_.devicePhyId : level0CommInfo.localRank;
@@ -133,6 +133,7 @@ HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &e
 
     CHK_RET(MultiRingAllGather(param.tag, execMem.inputMem, currentOutputMem, execMem.count, param.DataDes.dataType,
                                multRingsSliceZero, param.stream, PROF_STAGE_1, baseOffset, nullptr));
+
 
     HCCL_INFO("all gather 8PringHD level0 run success");
 
