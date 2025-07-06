@@ -88,11 +88,6 @@ HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &e
     CHK_RET(CheckCommSize(COMM_LEVEL0, ringNum));
     SubCommInfo level0CommInfo = GetSubCommInfo(COMM_LEVEL0, COMM_INDEX_0);
     
-    // 假设 level0CommInfo 已获得
-    HCCL_ERROR("[CommDebug][Level0] localRank=%u, localRankSize=%u", 
-        level0CommInfo.localRank, level0CommInfo.localRankSize);
-
-    
     //u32 commIndex = (ringNum == LEVEL0_PLANE_NUM_IN_8PRING) ? topoAttr_.devicePhyId : level0CommInfo.localRank;
     u32 commIndex = level0CommInfo.localRank;
     //u32 commIndex = topoAttr_.devicePhyId;
@@ -115,6 +110,10 @@ HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &e
         HCCL_ERROR("[CollAllGatherRingExecutor][KernelRun]all gather 8PringHD memcpy Failed, "
             "Offset[%llu], Size[%llu]", baseOffset + level0Offset, inputMemSize), ret);
 
+    HCCL_ERROR("[AllGather][CopyInputToOutput] serverIndex=%u, commIndex=%u, offset=%llu, size=%llu",
+          serverIndex, commIndex, baseOffset + level0Offset, inputMemSize);
+
+    
     // 第二步，各个AI Server 内 multi ring all gather
     std::vector<Slice> dataSegsSlice; // 数据分成ranksize份，每份的起始偏移和大小
     std::vector<std::vector<Slice>> multRingsSliceZero; // 数据基于该rank上环0的偏移
@@ -133,7 +132,7 @@ HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &e
         HCCL_ERROR("[CollAllGatherRingExecutor][KernelRun]ringNum[%u] != multRingsSliceZero size[%zu]",
             ringNum, multRingsSliceZero.size()), HCCL_E_INTERNAL);
 
-    //  抽取当前用于多环all gather 的output内存数据
+    //  抽取当前用于多环all gather 的output内存数据 本 server 所有卡的 ring 通信输出目标缓冲区
     DeviceMem currentOutputMem = execMem.outputMem.range(baseOffset, inputMemSize * level0RankSize);
     CHK_SMART_PTR_NULL(currentOutputMem);
 
