@@ -110,9 +110,6 @@ HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &e
         HCCL_ERROR("[CollAllGatherRingExecutor][KernelRun]all gather 8PringHD memcpy Failed, "
             "Offset[%llu], Size[%llu]", baseOffset + level0Offset, inputMemSize), ret);
 
-    HCCL_ERROR("[AllGather][CopyInputToOutput] serverIndex=%u, commIndex=%u, offset=%llu, size=%llu",
-          serverIndex, commIndex, baseOffset + level0Offset, inputMemSize);
-
     
     // 第二步，各个AI Server 内 multi ring all gather
     std::vector<Slice> dataSegsSlice; // 数据分成ranksize份，每份的起始偏移和大小
@@ -135,6 +132,10 @@ HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &e
     //  抽取当前用于多环all gather 的output内存数据 本 server 所有卡的 ring 通信输出目标缓冲区
     DeviceMem currentOutputMem = execMem.outputMem.range(baseOffset, inputMemSize * level0RankSize);
     CHK_SMART_PTR_NULL(currentOutputMem);
+
+    HCCL_ERROR("[Debug][currentOutputMem] offset=%llu, size=%llu",
+          baseOffset, inputMemSize * level0RankSize);
+
 
     CHK_RET(ActiveSlaveStreams(param.stream));
 
