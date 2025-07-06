@@ -193,16 +193,6 @@ HcclResult CollCommExecutor::MultiRingAllGather(const std::string &tag, DeviceMe
     for (u32 ringIndex = 0; ringIndex < ringNum; ringIndex++) {
         std::vector<Slice> singleRingSliceZero = multRingsSliceZero[ringIndex];
 
-    // 输出每个环的分片信息
-        HCCL_ERROR("[Debug][MultiRingAllGather] ringIndex = %u, singleRingSliceZero.size() = %zu",
-            ringIndex, singleRingSliceZero.size());
-        for (size_t i = 0; i < singleRingSliceZero.size(); ++i) {
-            HCCL_ERROR("[Debug][singleRingSliceZero] slice[%zu]: offset = %llu, size = %llu",
-                i,
-                static_cast<unsigned long long>(singleRingSliceZero[i].offset),
-                static_cast<unsigned long long>(singleRingSliceZero[i].size));
-        }
-
         CHK_PRT_RET(singleRingSliceZero.empty(), HCCL_ERROR("[CollCommExecutor][MultiRingAllGather]"\
             "singleRingSliceZero is empty"), HCCL_E_INTERNAL);
 
@@ -216,6 +206,14 @@ HcclResult CollCommExecutor::MultiRingAllGather(const std::string &tag, DeviceMe
         }
         std::vector<u32> rankOrder;
         CHK_RET(GetRankOrder(multiRingsOrder, ringIndex, rankOrder));
+
+        //输出rankOrder
+        HCCL_ERROR("rankOrder for ringIndex[%u]: ", ringIndex);
+        std::string rankOrderStr = "RankOrder for Ring[" + std::to_string(ringIndex) + "]:";
+        for (size_t i = 0; i < rankOrder.size(); ++i) {
+            rankOrderStr += " " + std::to_string(rankOrder[i]);
+        }
+        HCCL_ERROR("[Debug][RankOrder] %s", rankOrderStr.c_str());
 
         SubCommInfo level0RingCommInfo = GetSubCommInfo(COMM_LEVEL0, ringIndex);
 
