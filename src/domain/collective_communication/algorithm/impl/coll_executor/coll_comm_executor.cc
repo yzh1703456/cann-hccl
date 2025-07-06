@@ -207,12 +207,6 @@ HcclResult CollCommExecutor::MultiRingAllGather(const std::string &tag, DeviceMe
         std::vector<u32> rankOrder;
         CHK_RET(GetRankOrder(multiRingsOrder, ringIndex, rankOrder));
 
-        //输出rankOrder
-        HCCL_ERROR("rankOrder for ringIndex[%u]: ", ringIndex);
-        std::string rankOrderStr = "RankOrder for Ring[" + std::to_string(ringIndex) + "]:";
-        for (size_t i = 0; i < rankOrder.size(); ++i) {
-            rankOrderStr += " " + std::to_string(rankOrder[i]);
-        }
         HCCL_ERROR("[Debug][RankOrder] %s", rankOrderStr.c_str());
 
         SubCommInfo level0RingCommInfo = GetSubCommInfo(COMM_LEVEL0, ringIndex);
@@ -1963,7 +1957,8 @@ HcclResult CollCommExecutor::CalUserMemSlices(const HcclDataType dataType, const
 HcclResult CollCommExecutor::GetRankOrder(const std::vector<std::vector<u32>> &multiRingsOrder, u32 ringIndex,
     std::vector<u32> &rankOrder)
 {
-    std::vector<u32> ring0 = multiRingsOrder[0];
+    //std::vector<u32> ring0 = multiRingsOrder[0];
+    std::vector<u32> ring0 = { 0, 1, 2, 3, 4, 5, 6, 7 }; // 环0
     std::vector<u32> ringOrder = multiRingsOrder[ringIndex];
     for (u32 i = 0; i < ringOrder.size(); i++) {
         u32 deviceId = ringOrder[i];
