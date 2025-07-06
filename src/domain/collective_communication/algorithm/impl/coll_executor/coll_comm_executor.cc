@@ -206,8 +206,15 @@ HcclResult CollCommExecutor::MultiRingAllGather(const std::string &tag, DeviceMe
         }
         std::vector<u32> rankOrder;
         CHK_RET(GetRankOrder(multiRingsOrder, ringIndex, rankOrder));
+        
+        // 打印rankOrder信息
+        std::string rankOrderStr = "RankOrder for Ring[" + std::to_string(ringIndex) + "]:";
+        for (size_t i = 0; i < rankOrder.size(); ++i) {
+            rankOrderStr += " " + std::to_string(rankOrder[i]);
+        }
+        HCCL_ERROR("[Debug][RankOrder] %s", rankOrderStr.c_str());
 
-        // 
+      
         SubCommInfo level0RingCommInfo = GetSubCommInfo(COMM_LEVEL0, ringIndex);
 
         u32 rankSize = level0RingCommInfo.localRankSize;
