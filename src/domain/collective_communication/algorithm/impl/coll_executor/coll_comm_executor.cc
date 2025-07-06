@@ -1807,8 +1807,8 @@ std::vector<std::vector<Slice> > CollCommExecutor::PrepareMultiRingSlice(const s
             u32 deviceIdx = multiRingsOrder[ringIndex][segsIndex];
             std::vector<u32>::iterator iterRank = std::find(nicList.begin(), nicList.end(), deviceIdx);
             if (iterRank != nicList.end()) {
-                rankList.push_back(segsIndex);
-                //rankList.push_back(deviceIdx); // 使用设备ID作为rank
+                //rankList.push_back(segsIndex);
+                rankList.push_back(deviceIdx); // 使用设备ID作为rank
                 u32 nicPosition = distance(nicList.begin(), iterRank);
                 for (u32 chunkIdx = 0; chunkIdx < chunkSize; chunkIdx++) {
                     Slice tempSlice = mutliSegsSlices[nicPosition * chunkSize + chunkIdx][ringIndex];
