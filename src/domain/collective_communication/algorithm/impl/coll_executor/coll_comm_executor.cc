@@ -176,11 +176,19 @@ HcclResult CollCommExecutor::MultiRingAllGather(const std::string &tag, DeviceMe
     HcclResult ret = HCCL_SUCCESS;
     u32 ringNum = multRingsSliceZero.size();
     CHK_RET(CheckCommSize(COMM_LEVEL0, ringNum));
-    HCCL_ERROR("MultiRingAllGather: tag=%s, ringNum=%u, inputMem=%p, outputMem=%p, count=%llu, dataType=%d",
-        tag.c_str(), ringNum, inputMem.ptr(), outputMem.ptr(), count, dataType);
-        
+    
     std::vector<std::vector<u32>> ringNics;
     CHK_RET(GetRingNics(tag, ringNics));
+
+    for (size_t i = 0; i < ringNics.size(); ++i) {
+        std::string nicStr = "Ring[" + std::to_string(i) + "] NICs:";
+        for (size_t j = 0; j < ringNics[i].size(); ++j) {
+             nicStr += " " + std::to_string(ringNics[i][j]);
+    }
+    HCCL_ERROR("[Debug][ringNics] %s", nicStr.c_str());
+    }
+
+
     // 拿到ring环映射关系
     SubCommInfo level0ZeroCommInfo = GetSubCommInfo(COMM_LEVEL0, COMM_INDEX_0);
     auto nicList = topoAttr_.nicList;
