@@ -1890,11 +1890,11 @@ std::vector<std::vector<Slice> > CollCommExecutor::AnyPathPrepareMultiRingSlice(
     
     //输出mutliRingsSlices
     // 打印每个 ring 的分片信息
-    for (u32 ringIdx = 0; ringIdx < multiRingsSlices.size(); ++ringIdx) {
-        const auto &sliceList = multiRingsSlices[ringIdx];
+    for (u32 ringIdx = 0; ringIdx < mutliRingsSlices.size(); ++ringIdx) {
+        const auto &sliceList = mutliRingsSlices[ringIdx];
         for (u32 i = 0; i < sliceList.size(); ++i) {
             const Slice &s = sliceList[i];
-            HCCL_ERROR("[Prepare][MultiRingSlice] ringIndex[%u] slice[%u]: offset[%llu], size[%llu]",
+            HCCL_ERROR("[Prepare][MutliRingSlice] ringIndex[%u] slice[%u]: offset[%llu], size[%llu]",
                     ringIdx, i, s.offset, s.size);
         }
     }
