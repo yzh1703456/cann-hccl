@@ -180,14 +180,6 @@ HcclResult CollCommExecutor::MultiRingAllGather(const std::string &tag, DeviceMe
     std::vector<std::vector<u32>> ringNics;
     CHK_RET(GetRingNics(tag, ringNics));
 
-    for (size_t i = 0; i < ringNics.size(); ++i) {
-        std::string nicStr = "Ring[" + std::to_string(i) + "] NICs:";
-        for (size_t j = 0; j < ringNics[i].size(); ++j) {
-             nicStr += " " + std::to_string(ringNics[i][j]);
-    }
-    HCCL_ERROR("[Debug][ringNics] %s", nicStr.c_str());
-    }
-
 
     // 拿到ring环映射关系
     SubCommInfo level0ZeroCommInfo = GetSubCommInfo(COMM_LEVEL0, COMM_INDEX_0);
@@ -1820,6 +1812,16 @@ std::vector<std::vector<Slice> > CollCommExecutor::PrepareMultiRingSlice(const s
         rankList.clear();
     }
 
+    //输出mutliRingsSlices
+    // 打印每个 ring 的分片信息
+    for (u32 ringIdx = 0; ringIdx < mutliRingsSlices.size(); ++ringIdx) {
+        const auto &sliceList = mutliRingsSlices[ringIdx];
+        for (u32 i = 0; i < sliceList.size(); ++i) {
+            const Slice &s = sliceList[i];
+            HCCL_ERROR("[Prepare][MutliRingSlice] ringIndex[%u] slice[%u]: offset[%llu], size[%llu]",
+                    ringIdx, i, s.offset, s.size);
+        }
+    }
 
     ret = SetRingNics(tag, ringRankList);
     if (ret != HCCL_SUCCESS) {
@@ -1886,17 +1888,6 @@ std::vector<std::vector<Slice> > CollCommExecutor::AnyPathPrepareMultiRingSlice(
         ringRankList.push_back(rankList);
         singleRingSlices.clear();
         rankList.clear();
-    }
-    
-    //输出mutliRingsSlices
-    // 打印每个 ring 的分片信息
-    for (u32 ringIdx = 0; ringIdx < mutliRingsSlices.size(); ++ringIdx) {
-        const auto &sliceList = mutliRingsSlices[ringIdx];
-        for (u32 i = 0; i < sliceList.size(); ++i) {
-            const Slice &s = sliceList[i];
-            HCCL_ERROR("[Prepare][MutliRingSlice] ringIndex[%u] slice[%u]: offset[%llu], size[%llu]",
-                    ringIdx, i, s.offset, s.size);
-        }
     }
 
     ret = SetRingNics(tag, ringRankList);
