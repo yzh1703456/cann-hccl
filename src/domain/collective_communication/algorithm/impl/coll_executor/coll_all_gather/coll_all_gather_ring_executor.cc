@@ -133,9 +133,6 @@ HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &e
     DeviceMem currentOutputMem = execMem.outputMem.range(baseOffset, inputMemSize * level0RankSize);
     CHK_SMART_PTR_NULL(currentOutputMem);
 
-    HCCL_ERROR("[Debug][currentOutputMem] offset=%llu, size=%llu",
-          baseOffset, inputMemSize * level0RankSize);
-
 
     CHK_RET(ActiveSlaveStreams(param.stream));
 

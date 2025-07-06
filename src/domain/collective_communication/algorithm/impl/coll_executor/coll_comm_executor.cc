@@ -176,7 +176,9 @@ HcclResult CollCommExecutor::MultiRingAllGather(const std::string &tag, DeviceMe
     HcclResult ret = HCCL_SUCCESS;
     u32 ringNum = multRingsSliceZero.size();
     CHK_RET(CheckCommSize(COMM_LEVEL0, ringNum));
-
+    HCCL_ERROR("MultiRingAllGather: tag=%s, ringNum=%u, inputMem=%p, outputMem=%p, count=%llu, dataType=%d",
+        tag.c_str(), ringNum, inputMem.ptr(), outputMem.ptr(), count, dataType);
+        
     std::vector<std::vector<u32>> ringNics;
     CHK_RET(GetRingNics(tag, ringNics));
     // 拿到ring环映射关系
