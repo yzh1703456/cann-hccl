@@ -133,9 +133,9 @@ HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &e
     DeviceMem currentOutputMem = execMem.outputMem.range(baseOffset, inputMemSize * level0RankSize);
     CHK_SMART_PTR_NULL(currentOutputMem);
     
-    //  打印当前输出内存的偏移和大小
-    HCCL_ERROR("[Debug][currentOutputMem] offset=%llu, size=%llu",
-          baseOffset, inputMemSize * level0RankSize);
+    // //  打印当前输出内存的偏移和大小
+    // HCCL_ERROR("[Debug][currentOutputMem] offset=%llu, size=%llu",
+    //       baseOffset, inputMemSize * level0RankSize);
 
 
     CHK_RET(ActiveSlaveStreams(param.stream));

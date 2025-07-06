@@ -187,7 +187,16 @@ HcclResult CollCommExecutor::MultiRingAllGather(const std::string &tag, DeviceMe
     
     std::vector<std::vector<u32>> multiRingsOrder =
         GetRingsOrderByTopoType(level0ZeroCommInfo.localRankSize, TopoType::TOPO_TYPE_8P_RING, nicList);
-
+    
+    //输出multiRingsOrder的信息
+    for (size_t i = 0; i < multiRingsOrder.size(); ++i) {
+        std::string ringStr = "Ring[" + std::to_string(i) + "] Rank Order:";
+        for (size_t j = 0; j < multiRingsOrder[i].size(); ++j) {
+            ringStr += " " + std::to_string(multiRingsOrder[i][j]);
+        }
+    HCCL_ERROR("[Debug][multiRingsOrder] %s", ringStr.c_str());
+    }
+    
     CHK_RET(AlgTemplateBase::ExecEmptyTask(inputMem, outputMem, stream, dispatcher_));
     for (u32 ringIndex = 0; ringIndex < ringNum; ringIndex++) {
         std::vector<Slice> singleRingSliceZero = multRingsSliceZero[ringIndex];
@@ -1812,16 +1821,16 @@ std::vector<std::vector<Slice> > CollCommExecutor::PrepareMultiRingSlice(const s
         rankList.clear();
     }
 
-    //输出mutliRingsSlices
-    // 打印每个 ring 的分片信息
-    for (u32 ringIdx = 0; ringIdx < mutliRingsSlices.size(); ++ringIdx) {
-        const auto &sliceList = mutliRingsSlices[ringIdx];
-        for (u32 i = 0; i < sliceList.size(); ++i) {
-            const Slice &s = sliceList[i];
-            HCCL_ERROR("[Prepare][MutliRingSlice] ringIndex[%u] slice[%u]: offset[%llu], size[%llu]",
-                    ringIdx, i, s.offset, s.size);
-        }
-    }
+    // //输出mutliRingsSlices
+    // // 打印每个 ring 的分片信息
+    // for (u32 ringIdx = 0; ringIdx < mutliRingsSlices.size(); ++ringIdx) {
+    //     const auto &sliceList = mutliRingsSlices[ringIdx];
+    //     for (u32 i = 0; i < sliceList.size(); ++i) {
+    //         const Slice &s = sliceList[i];
+    //         HCCL_ERROR("[Prepare][MutliRingSlice] ringIndex[%u] slice[%u]: offset[%llu], size[%llu]",
+    //                 ringIdx, i, s.offset, s.size);
+    //     }
+    // }
 
     ret = SetRingNics(tag, ringRankList);
     if (ret != HCCL_SUCCESS) {
