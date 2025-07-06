@@ -1805,8 +1805,8 @@ std::vector<std::vector<Slice> > CollCommExecutor::PrepareMultiRingSlice(const s
             u32 deviceIdx = multiRingsOrder[ringIndex][segsIndex];
             std::vector<u32>::iterator iterRank = std::find(nicList.begin(), nicList.end(), deviceIdx);
             if (iterRank != nicList.end()) {
-                //rankList.push_back(segsIndex);
-                rankList.push_back(deviceIdx); // 使用设备ID作为rank
+                rankList.push_back(segsIndex);
+                //rankList.push_back(deviceIdx); // 使用设备ID作为rank
                 u32 nicPosition = distance(nicList.begin(), iterRank);
                 for (u32 chunkIdx = 0; chunkIdx < chunkSize; chunkIdx++) {
                     Slice tempSlice = mutliSegsSlices[nicPosition * chunkSize + chunkIdx][ringIndex];
@@ -1886,6 +1886,17 @@ std::vector<std::vector<Slice> > CollCommExecutor::AnyPathPrepareMultiRingSlice(
         ringRankList.push_back(rankList);
         singleRingSlices.clear();
         rankList.clear();
+    }
+    
+    //输出mutliRingsSlices
+    // 打印每个 ring 的分片信息
+    for (u32 ringIdx = 0; ringIdx < multiRingsSlices.size(); ++ringIdx) {
+        const auto &sliceList = multiRingsSlices[ringIdx];
+        for (u32 i = 0; i < sliceList.size(); ++i) {
+            const Slice &s = sliceList[i];
+            HCCL_ERROR("[Prepare][MultiRingSlice] ringIndex[%u] slice[%u]: offset[%llu], size[%llu]",
+                    ringIdx, i, s.offset, s.size);
+        }
     }
 
     ret = SetRingNics(tag, ringRankList);
