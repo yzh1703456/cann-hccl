@@ -87,13 +87,27 @@ HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &e
     u32 ringNum = 4;
     CHK_RET(CheckCommSize(COMM_LEVEL0, ringNum));
     SubCommInfo level0CommInfo = GetSubCommInfo(COMM_LEVEL0, COMM_INDEX_0);
+    
+    // 假设 level0CommInfo 已获得
+    HCCL_ERROR("[CommDebug][Level0] localRank=%u, localRankSize=%u", 
+        level0CommInfo.localRank, level0CommInfo.localRankSize);
+
+    // 输出 rankList（rank 排列顺序）
+    std::string rankListStr = "rankList = [";
+    for (size_t i = 0; i < level0CommInfo.rankList.size(); ++i) {
+        rankListStr += std::to_string(level0CommInfo.rankList[i]);
+        if (i != level0CommInfo.rankList.size() - 1) {
+            rankListStr += ", ";
+        }
+    }
+    rankListStr += "]";
+    HCCL_ERROR("[CommDebug][Level0] %s", rankListStr.c_str());
+
+    
     //u32 commIndex = (ringNum == LEVEL0_PLANE_NUM_IN_8PRING) ? topoAttr_.devicePhyId : level0CommInfo.localRank;
     u32 commIndex = level0CommInfo.localRank;
     //u32 commIndex = topoAttr_.devicePhyId;
-    //输出topoAttr_.devicePhyId作为commIndex
-    HCCL_ERROR("[CollAllGatherRingExecutor][KernelRun]tag[%s] commIndex[%u], devicePhy[%u]",
-        param.tag.c_str(), commIndex, topoAttr_.devicePhyId);
-
+    
     u32 level0RankSize = level0CommInfo.localRankSize;
 
     CHK_RET(CheckCommSize(COMM_LEVEL1, commIndex + 1));
