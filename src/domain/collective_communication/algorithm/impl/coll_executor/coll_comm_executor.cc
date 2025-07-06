@@ -194,14 +194,14 @@ HcclResult CollCommExecutor::MultiRingAllGather(const std::string &tag, DeviceMe
         std::vector<Slice> singleRingSliceZero = multRingsSliceZero[ringIndex];
 
     // 输出每个环的分片信息
-    HCCL_ERROR("[Debug][MultiRingAllGather] ringIndex = %u, singleRingSliceZero.size() = %zu",
-        ringIndex, singleRingSliceZero.size());
-    for (size_t i = 0; i < singleRingSliceZero.size(); ++i) {
-        HCCL_ERROR("[Debug][singleRingSliceZero] slice[%zu]: offset = %llu, size = %llu",
-            i,
-            static_cast<unsigned long long>(singleRingSliceZero[i].offset),
-            static_cast<unsigned long long>(singleRingSliceZero[i].size));
-    }
+        HCCL_ERROR("[Debug][MultiRingAllGather] ringIndex = %u, singleRingSliceZero.size() = %zu",
+            ringIndex, singleRingSliceZero.size());
+        for (size_t i = 0; i < singleRingSliceZero.size(); ++i) {
+            HCCL_ERROR("[Debug][singleRingSliceZero] slice[%zu]: offset = %llu, size = %llu",
+                i,
+                static_cast<unsigned long long>(singleRingSliceZero[i].offset),
+                static_cast<unsigned long long>(singleRingSliceZero[i].size));
+        }
 
         CHK_PRT_RET(singleRingSliceZero.empty(), HCCL_ERROR("[CollCommExecutor][MultiRingAllGather]"\
             "singleRingSliceZero is empty"), HCCL_E_INTERNAL);
