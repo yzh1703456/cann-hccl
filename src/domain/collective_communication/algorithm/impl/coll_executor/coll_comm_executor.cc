@@ -1807,8 +1807,8 @@ std::vector<std::vector<Slice> > CollCommExecutor::PrepareMultiRingSlice(const s
             u32 deviceIdx = multiRingsOrder[ringIndex][segsIndex];
             std::vector<u32>::iterator iterRank = std::find(nicList.begin(), nicList.end(), deviceIdx);
             if (iterRank != nicList.end()) {
-                //rankList.push_back(segsIndex);
-                rankList.push_back(deviceIdx); // 使用设备ID作为rank
+                rankList.push_back(segsIndex);
+                //rankList.push_back(deviceIdx); // 使用设备ID作为rank
                 u32 nicPosition = distance(nicList.begin(), iterRank);
                 for (u32 chunkIdx = 0; chunkIdx < chunkSize; chunkIdx++) {
                     Slice tempSlice = mutliSegsSlices[nicPosition * chunkSize + chunkIdx][ringIndex];
@@ -1960,19 +1960,31 @@ HcclResult CollCommExecutor::CalUserMemSlices(const HcclDataType dataType, const
     return HCCL_SUCCESS;
 }
 
+// HcclResult CollCommExecutor::GetRankOrder(const std::vector<std::vector<u32>> &multiRingsOrder, u32 ringIndex,
+//     std::vector<u32> &rankOrder)
+// {
+//     //std::vector<u32> ring0 = multiRingsOrder[0];
+//     std::vector<u32> ring0 = { 0, 1, 2, 3, 4, 5, 6, 7 }; // 环0
+//     std::vector<u32> ringOrder = multiRingsOrder[ringIndex];
+//     for (u32 i = 0; i < ringOrder.size(); i++) {
+//         u32 deviceId = ringOrder[i];
+//         u32 pos = distance(ring0.begin(), find(ring0.begin(), ring0.end(), deviceId));
+//         rankOrder.push_back(pos);
+//     }
+//     return HCCL_SUCCESS;
+// }
+
 HcclResult CollCommExecutor::GetRankOrder(const std::vector<std::vector<u32>> &multiRingsOrder, u32 ringIndex,
     std::vector<u32> &rankOrder)
 {
-    //std::vector<u32> ring0 = multiRingsOrder[0];
-    std::vector<u32> ring0 = { 0, 1, 2, 3, 4, 5, 6, 7 }; // 环0
     std::vector<u32> ringOrder = multiRingsOrder[ringIndex];
+    rankOrder.clear();
     for (u32 i = 0; i < ringOrder.size(); i++) {
-        u32 deviceId = ringOrder[i];
-        u32 pos = distance(ring0.begin(), find(ring0.begin(), ring0.end(), deviceId));
-        rankOrder.push_back(pos);
+        rankOrder.push_back(i);  // 顺序映射：rankOrder[i] == i
     }
     return HCCL_SUCCESS;
 }
+
 
 u32 CollCommExecutor::RefreshCommIdx(u32 commIndex, std::vector<u32> nicList, u32 devicePhyId)
 {
