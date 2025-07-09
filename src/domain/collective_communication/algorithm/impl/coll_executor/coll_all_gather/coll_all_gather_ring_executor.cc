@@ -64,13 +64,13 @@ HcclResult CollAllGatherRingExecutor::CalcLevel0CommInfo(TransportMemType inputT
     HCCL_INFO("[CollAllGatherRingExecutor][CalcLevel0CommInfo]tag[%s] Calc RingComm finish", tag_.c_str());
     return HCCL_SUCCESS;
 }
-/*
+
 u64 CollAllGatherRingExecutor::CalcLoopMaxCount(const u64 cclBuffSize, const u32 unitSize)
 {
     u64 maxCountPerLoop = cclBuffSize / (topoAttr_.userRankSize * unitSize);
     return maxCountPerLoop;
 }
-*/
+
 
 HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &execMem)
 {
@@ -196,7 +196,7 @@ HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &e
         CHK_RET(RunTemplate(level1TempAlg, level1CommInfo));
     }
     HCCL_INFO("all gather 8PringHD level1 run success");
-
+    /*
     //  网口裁剪：AI server 内多网口的allgather
     if (topoType_ == TopoType::TOPO_TYPE_8P_RING && nicList.size() != DEVICE_EIGHT) {
         CHK_RET(ActiveSlaveStreams(param.stream));   // 为什么要active两遍
@@ -214,6 +214,7 @@ HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &e
 
         HCCL_INFO("all gather 8PringHD level1 chunk run success");
     }
+    */
     return HCCL_SUCCESS;
 }
 

@@ -46,7 +46,7 @@ HcclResult AllGatherRing::RxVector(const LINK &link, const std::vector<Slice> &r
     CHK_RET(link->RxAsync(rxMems, stream_));
     return HCCL_SUCCESS;
 }
-
+/*
 HcclResult AllGatherRing::Tx(const LINK &link, const Slice &txSlice)
 {
     DeviceMem srcMem = outputMem_.range(txSlice.offset, txSlice.size);
@@ -63,6 +63,7 @@ HcclResult AllGatherRing::Rx(const LINK &link, const Slice &rxSlice)
     CHK_RET(link->RxAsync(UserMemType::OUTPUT_MEM, rxSlice.offset + baseOffset_, dstMem.ptr(), rxSlice.size, stream_));
     return HCCL_SUCCESS;
 }
+*/
 
 // 服务器间allgather的入口函数
 HcclResult AllGatherRing::RunAsync(const u32 rank, const u32 rankSize, const std::vector<LINK> &links)
@@ -196,7 +197,7 @@ HcclResult AllGatherRing::RunAllGather(u32 rank, u32 rankSize, const std::vector
     }
     return HCCL_SUCCESS;
 }
-
+/*
 HcclResult AllGatherRing::RunAllGatherChunk(const u32 rank, const u32 rankSize,
                                             const std::vector<Slice> &outputSlices)
 {
@@ -358,5 +359,6 @@ HcclResult AllGatherRing::AllGatherSlicesPrep(u32 rankSize, u32 nicSize)
     }
     return HCCL_SUCCESS;
 }
+*/
 REGISTER_TEMPLATE(TemplateType::TEMPLATE_ALL_GATHER_RING, AllGatherRing);
 }  // namespace hccl
