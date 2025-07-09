@@ -127,14 +127,15 @@ HcclResult AllGatherRing::RunAsync(const u32 rank, const u32 rankSize, const std
     // 运行all-gather, ring算法
     // 单环场景下 nicRankList_ 长度默认为 8。
     // 多环场景下 nicRankList_ 长度为网口数量。此时若 rankSize != nicRankList_ 则为网口裁剪场景
-    if (rankSize != HCCL_NIC_MAX_NUM || nicRankList_.size() == HCCL_NIC_MAX_NUM) {
-        // 非网口裁剪场景:
-        CHK_RET(RunAllGather(rank, rankSize, slices_));
-    } else {
-        // 网口裁剪场景：当前仅在 910A 8P_RING (4环)，且网口不满配情况下使用
-        CHK_RET(AllGatherSlicesPrep(rankSize, nicRankList_.size()));
-        CHK_RET(RunAllGatherChunk(rank, rankSize, slices_));
-    }
+    // if (rankSize != HCCL_NIC_MAX_NUM || nicRankList_.size() == HCCL_NIC_MAX_NUM) {
+    //     // 非网口裁剪场景:
+    //     CHK_RET(RunAllGather(rank, rankSize, slices_));
+    // } else {
+    //     // 网口裁剪场景：当前仅在 910A 8P_RING (4环)，且网口不满配情况下使用
+    //     CHK_RET(AllGatherSlicesPrep(rankSize, nicRankList_.size()));
+    //     CHK_RET(RunAllGatherChunk(rank, rankSize, slices_));
+    // }
+    CHK_RET(RunAllGather(rank, rankSize, slices_));
 
     if (barrierSwitchOn_) {
         // 执行barrier，保证数据收发完成
@@ -197,6 +198,7 @@ HcclResult AllGatherRing::RunAllGather(u32 rank, u32 rankSize, const std::vector
     }
     return HCCL_SUCCESS;
 }
+
 /*
 HcclResult AllGatherRing::RunAllGatherChunk(const u32 rank, const u32 rankSize,
                                             const std::vector<Slice> &outputSlices)
@@ -360,5 +362,6 @@ HcclResult AllGatherRing::AllGatherSlicesPrep(u32 rankSize, u32 nicSize)
     return HCCL_SUCCESS;
 }
 */
+
 REGISTER_TEMPLATE(TemplateType::TEMPLATE_ALL_GATHER_RING, AllGatherRing);
 }  // namespace hccl
