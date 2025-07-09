@@ -64,12 +64,13 @@ HcclResult CollAllGatherRingExecutor::CalcLevel0CommInfo(TransportMemType inputT
     HCCL_INFO("[CollAllGatherRingExecutor][CalcLevel0CommInfo]tag[%s] Calc RingComm finish", tag_.c_str());
     return HCCL_SUCCESS;
 }
-
+/*
 u64 CollAllGatherRingExecutor::CalcLoopMaxCount(const u64 cclBuffSize, const u32 unitSize)
 {
     u64 maxCountPerLoop = cclBuffSize / (topoAttr_.userRankSize * unitSize);
     return maxCountPerLoop;
 }
+*/
 
 HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &execMem)
 {
