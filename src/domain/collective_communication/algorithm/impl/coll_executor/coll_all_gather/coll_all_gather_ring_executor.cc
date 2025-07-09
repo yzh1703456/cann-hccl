@@ -81,17 +81,11 @@ HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &e
         HCCL_ERROR("[CollAllGatherRingExecutor][KernelRun]errNo[0x%016llx] datatype[%d] is invalid",
             HCCL_ERROR_CODE(HCCL_E_PARA), param.DataDes.dataType), HCCL_E_PARA);
 
-    // 获取子通信域的信息
-    // u32 ringNum = (topoType_ == TopoType::TOPO_TYPE_8P_RING) ? LEVEL0_PLANE_NUM_IN_8PRING :
-    //     LEVEL0_PLANE_NUM_IN_NPRING_SINGLE;
 
     u32 ringNum = 4;
     CHK_RET(CheckCommSize(COMM_LEVEL0, ringNum));
     SubCommInfo level0CommInfo = GetSubCommInfo(COMM_LEVEL0, COMM_INDEX_0);
-    
-    //u32 commIndex = (ringNum == LEVEL0_PLANE_NUM_IN_8PRING) ? topoAttr_.devicePhyId : level0CommInfo.localRank;
     u32 commIndex = level0CommInfo.localRank;
-    //u32 commIndex = topoAttr_.devicePhyId;
     
     u32 level0RankSize = level0CommInfo.localRankSize;
 
@@ -118,12 +112,6 @@ HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &e
     u32 sliceNum = level0RankSize;
     CHK_RET(PrepareAllgatherSlice(sliceNum, inputMemSize, dataSegsSlice));
 
-    //  多环数据切分
-    // if (ringNum == LEVEL0_PLANE_NUM_IN_8PRING) {
-    //     multRingsSliceZero = PrepareMultiRingSlice(dataSegsSlice, param.tag);
-    // } else {
-    //multRingsSliceZero.push_back(dataSegsSlice);
-    // }
     multRingsSliceZero = PrepareMultiRingSlice(dataSegsSlice, param.tag);
     
     CHK_PRT_RET(multRingsSliceZero.size() != ringNum,
@@ -134,11 +122,6 @@ HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &e
     DeviceMem currentOutputMem = execMem.outputMem.range(baseOffset, inputMemSize * level0RankSize);
     CHK_SMART_PTR_NULL(currentOutputMem);
     
-    // //  打印当前输出内存的偏移和大小
-    // HCCL_ERROR("[Debug][currentOutputMem] offset=%llu, size=%llu",
-    //       baseOffset, inputMemSize * level0RankSize);
-
-
     CHK_RET(ActiveSlaveStreams(param.stream));
 
     CHK_RET(MultiRingAllGather(param.tag, execMem.inputMem, currentOutputMem, execMem.count, param.DataDes.dataType,
@@ -196,25 +179,6 @@ HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &e
         CHK_RET(RunTemplate(level1TempAlg, level1CommInfo));
     }
     HCCL_INFO("all gather 8PringHD level1 run success");
-    /*
-    //  网口裁剪：AI server 内多网口的allgather
-    if (topoType_ == TopoType::TOPO_TYPE_8P_RING && nicList.size() != DEVICE_EIGHT) {
-        CHK_RET(ActiveSlaveStreams(param.stream));   // 为什么要active两遍
-
-        u32 perDataSize = 0;
-        CHK_RET(SalGetDataTypeSize(param.DataDes.dataType, perDataSize));
-        u64 tempCount = execMem.outputMem.size() / perDataSize;
-        CHK_RET(AlgTemplateBase::PrepareSliceData(tempCount, perDataSize, sliceNum, 0, dataSegsSlice));
-        multRingsSliceZero = PrepareMultiRingSlice(dataSegsSlice, param.tag, false, nicList);
-        CHK_PRT_RET(multRingsSliceZero.size() != ringNum, HCCL_ERROR("[CollAllGatherRingExecutor][KernelRun]"\
-            "ringNum[%u] != multRingsSliceZero size[%zu]", ringNum, multRingsSliceZero.size()), HCCL_E_INTERNAL);
-
-        CHK_RET(MultiRingAllGather(param.tag, execMem.outputMem, execMem.outputMem, tempCount / DEVICE_EIGHT,
-            param.DataDes.dataType, multRingsSliceZero, param.stream, PROF_STAGE_1));
-
-        HCCL_INFO("all gather 8PringHD level1 chunk run success");
-    }
-    */
     return HCCL_SUCCESS;
 }
 

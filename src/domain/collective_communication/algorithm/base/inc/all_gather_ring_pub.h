@@ -33,16 +33,7 @@ private:
 
     HcclResult TxVector(const LINK &link, const std::vector<Slice> &txSlices);
     HcclResult RxVector(const LINK &link, const std::vector<Slice> &rxSlices);
-    // HcclResult Tx(const LINK &link, const Slice &txSlice);
-    // HcclResult Rx(const LINK &link, const Slice &rxSlice);
-
-    // allgather ring chunk实现相关函数
-    // HcclResult RunAllGatherChunk(const u32 rank, const u32 rankSize, const std::vector<Slice> &outputSlices);
-    // HcclResult HeadAllGatherChunk(u32 rank, u32 rankSize, const std::vector<Slice> &outputSlices);
-    // HcclResult MidAllGatherChunk(u32 rank, u32 rankSize, u32 sliceIdx, const std::vector<Slice> &outputSlices);
-    // HcclResult TailAllGatherChunk(u32 rank, u32 rankSize, u32 sliceIdx, const std::vector<Slice> &outputSlices);
-    // HcclResult AllGatherSlicesPrep(u32 rankSize, u32 nicSize);
-
+    
     // 迭代6新增加
     std::shared_ptr<Transport> linkLeft_;
     std::shared_ptr<Transport> linkRight_;
