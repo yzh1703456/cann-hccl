@@ -73,7 +73,7 @@ HcclResult AllGatherOperator::SelectAlg(const std::string& tag, const OpParam& p
 HcclResult AllGatherOperator::SelectAlgforNew(const OpParam& param, std::string& algName)
 {
 
-      algName = "AllGatherNewExecutor";
+      algName = "AllGatherRingExecutor";
 
     HCCL_INFO("[SelectAlgforRing] all_gather SelectAlgforNew is algName [%s]", algName.c_str());
     return HCCL_SUCCESS;
