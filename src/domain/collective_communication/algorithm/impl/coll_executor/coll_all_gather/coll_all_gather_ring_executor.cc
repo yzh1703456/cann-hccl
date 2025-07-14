@@ -53,7 +53,7 @@ HcclResult CollAllGatherRingExecutor::CalcTransportMemType(TransportMemType &inp
         tag_.c_str(), inputType, outputType);
     return HCCL_SUCCESS;
 }
-
+/*
 HcclResult CollAllGatherRingExecutor::CalcLevel0CommInfo(TransportMemType inputType,
     TransportMemType outputType,
     std::vector<LevelNSubCommTransport>& opTransport)
@@ -62,6 +62,17 @@ HcclResult CollAllGatherRingExecutor::CalcLevel0CommInfo(TransportMemType inputT
     CommParaInfo commParaLevel0(COMM_LEVEL0, CommType::COMM_TAG_RING_INNER);
     CHK_RET(CalcCommPlaneInfo(tag_, commParaLevel0, opTransport[COMM_LEVEL0], inputType, outputType));
     HCCL_INFO("[CollAllGatherRingExecutor][CalcLevel0CommInfo]tag[%s] Calc RingComm finish", tag_.c_str());
+    return HCCL_SUCCESS;
+}
+*/
+
+HcclResult CollAllGatherRingExecutor::CalcLevel0CommInfo(TransportMemType inputType, TransportMemType outputType,
+    std::vector<LevelNSubCommTransport>& opTransport)
+{
+    CommParaInfo commParaLevel0(COMM_LEVEL0, CommType::COMM_TAG_MESH);
+    commParaLevel0.meshSinglePlane = (topoAttr_.deviceType == DevType::DEV_TYPE_910B) &&
+        !topoMatcher_->GetExternalInputHcclDeterministic() && (workflowMode_ != HcclWorkflowMode::HCCL_WORKFLOW_MODE_OP_BASE);
+    CHK_RET(CalcCommPlaneInfo(tag_, commParaLevel0, opTransport[COMM_LEVEL0], inputType, outputType));
     return HCCL_SUCCESS;
 }
 

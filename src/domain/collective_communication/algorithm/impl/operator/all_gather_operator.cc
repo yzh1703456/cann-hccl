@@ -233,12 +233,13 @@ HcclResult AllGatherOperator::SelectAlgfor91093(const OpParam& param, std::strin
             "to be greater than the current data volume[%llu] bytes to improve the performance of the 91093 environment.",
             cclBufferManager_.GetInCCLbufferSize(), dataSize);
     }
-
+    //判断当前是否是“单算子模式”，用于后续通信策略或算法路径的选择
     bool isOpbase = workflowMode_ == HcclWorkflowMode::HCCL_WORKFLOW_MODE_OP_BASE;
     bool isAivMode = topoMatcher_->GetAivModeConfig() && IsSupportAIVCopy(param.DataDes.dataType) && serverNum_ == 1 &&
         ((isOpbase && dataSize <= AIV_ALL_GATHER_A3_ENTRY_SIZE) ||
         (!isOpbase && dataSize <= AIV_ALL_GATHER_A3_GRAPH_ENTRY_SIZE));
     if (isAivMode) {
+        //区分是否为小数据量优化路径
         if ((isOpbase && dataSize <= AIV_ALL_GATHER_SMALL_SIZE)
             || (!isOpbase && dataSize <= AIV_A3_ALL_GATHER_GRAPH_GUIYI_SIZE)) {
             algName = "AllGatherMeshAivSmallCountExecutor"; // 目前a3 aivmode下单算子模式正好全走小数据
@@ -248,6 +249,7 @@ HcclResult AllGatherOperator::SelectAlgfor91093(const OpParam& param, std::strin
         HCCL_INFO("[SelectAlgfor91093] all_gather SelectAlgfor91093 is algName [%s]", algName.c_str());
         return HCCL_SUCCESS;
     }
+    //判断是否使用Small Count优化路径（不同于AIV）
     bool smallCountOptimSingleServer = (serverNum_ == 1) &&
         ((workflowMode_ == HcclWorkflowMode::HCCL_WORKFLOW_MODE_OP_BASE) ||
         (workflowMode_ != HcclWorkflowMode::HCCL_WORKFLOW_MODE_OP_BASE && !param.aicpuUnfoldMode)) &&
@@ -256,15 +258,16 @@ HcclResult AllGatherOperator::SelectAlgfor91093(const OpParam& param, std::strin
     bool smallCountOptimMultiServer = SmallCountOptimMultiServer(param);
         
     if (multiModuleDiffDeviceNumMode_ || multiSuperPodDiffServerNumMode_) {
-        algName = "AllGatherComm";
+        algName = "AllGatherComm"; //通用通信实现
     } else if (smallCountOptimMultiServer) {
-        algName = "AllGatherSmallCount";
-    } else if (smallCountOptimSingleServer) {
+        algName = "AllGatherSmallCount"; //多机小数据量优化路径
+    } else if (smallCountOptimSingleServer) {  //单机小数据量优化路径
         if (workflowMode_ == HcclWorkflowMode::HCCL_WORKFLOW_MODE_OP_BASE) {
-            algName = "AllGatherMeshOpbaseExecutor";
+            algName = "AllGatherMeshOpbaseExecutor";  //单算子模式
         } else {
-            algName = "AllGatherMeshExecutor";
+            algName = "AllGatherMeshExecutor";  //图模式
         }
+        //RDMA/SDMA并发+双环拓扑场景
     } else if (GetExternalInputEnableRdmaSdmaConcurrent() && topoType_ == TopoType::TOPO_TYPE_NP_DOUBLE_RING &&
         !param.aicpuUnfoldMode && (GetWorkflowMode() != HcclWorkflowMode::HCCL_WORKFLOW_MODE_OP_BASE)) {
         if (!(algType_.algoLevel1 == AlgTypeLevel1::ALG_LEVEL1_RING || algType_.algoLevel1 == AlgTypeLevel1::ALG_LEVEL1_NB)) {

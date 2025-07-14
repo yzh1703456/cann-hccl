@@ -181,14 +181,25 @@ HcclResult CollCommExecutor::MultiRingAllGather(const std::string &tag, DeviceMe
     CHK_RET(GetRingNics(tag, ringNics));
 
 
-    // 拿到ring环映射关系
     SubCommInfo level0ZeroCommInfo = GetSubCommInfo(COMM_LEVEL0, COMM_INDEX_0);
     auto nicList = topoAttr_.nicList;
     
-    std::vector<std::vector<u32>> multiRingsOrder =
-        GetRingsOrderByTopoType(level0ZeroCommInfo.localRankSize, TopoType::TOPO_TYPE_8P_RING, nicList);
+    // std::vector<std::vector<u32>> multiRingsOrder =
+    //     GetRingsOrderByTopoType(level0ZeroCommInfo.localRankSize, TopoType::TOPO_TYPE_8P_RING, nicList);
     
-    
+    std::vector<std::vector<u32>> multiRingsOrder;
+    std::vector<u32> tmpLevel00 = { 0, 1, 2, 6, 5, 4, 7, 3 }; // 环0
+    std::vector<u32> tmpLevel01 = { 0, 3, 7, 4, 5, 6, 2, 1 }; // 环1
+    std::vector<u32> tmpLevel02 = { 0, 2, 3, 1, 5, 7, 6, 4 }; // 环2
+    std::vector<u32> tmpLevel03 = { 0, 4, 6, 7, 5, 1, 3, 2 }; // 环3
+
+    // 填充8pring 多环的comm level0 四个环的顺序
+    multiRingOrder.push_back(tmpLevel00);
+    multiRingOrder.push_back(tmpLevel01);
+    multiRingOrder.push_back(tmpLevel02);
+    multiRingOrder.push_back(tmpLevel03);
+
+
     CHK_RET(AlgTemplateBase::ExecEmptyTask(inputMem, outputMem, stream, dispatcher_));
     for (u32 ringIndex = 0; ringIndex < ringNum; ringIndex++) {
         std::vector<Slice> singleRingSliceZero = multRingsSliceZero[ringIndex];
@@ -204,17 +215,10 @@ HcclResult CollCommExecutor::MultiRingAllGather(const std::string &tag, DeviceMe
         } else {
             userMemOutputSlices = multRingsUserMemSlice[ringIndex];
         }
+
         std::vector<u32> rankOrder;
         CHK_RET(GetRankOrder(multiRingsOrder, ringIndex, rankOrder));
         
-        // 打印rankOrder信息
-        std::string rankOrderStr = "RankOrder for Ring[" + std::to_string(ringIndex) + "]:";
-        for (size_t i = 0; i < rankOrder.size(); ++i) {
-            rankOrderStr += " " + std::to_string(rankOrder[i]);
-        }
-        HCCL_ERROR("[Debug][RankOrder] %s", rankOrderStr.c_str());
-
-      
         SubCommInfo level0RingCommInfo = GetSubCommInfo(COMM_LEVEL0, ringIndex);
 
         u32 rankSize = level0RingCommInfo.localRankSize;
@@ -1821,17 +1825,6 @@ std::vector<std::vector<Slice> > CollCommExecutor::PrepareMultiRingSlice(const s
         ringRankList.push_back(rankList);
         singleRingSlices.clear();
         rankList.clear();
-    }
-
-    //输出mutliRingsSlices
-    // 打印每个 ring 的分片信息
-    for (u32 ringIdx = 0; ringIdx < mutliRingsSlices.size(); ++ringIdx) {
-        const auto &sliceList = mutliRingsSlices[ringIdx];
-        for (u32 i = 0; i < sliceList.size(); ++i) {
-            const Slice &s = sliceList[i];
-            HCCL_ERROR("[Prepare][MutliRingSlice] ringIndex[%u] slice[%u]: offset[%llu], size[%llu]",
-                    ringIdx, i, s.offset, s.size);
-        }
     }
 
     ret = SetRingNics(tag, ringRankList);
