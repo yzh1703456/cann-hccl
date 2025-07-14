@@ -194,10 +194,10 @@ HcclResult CollCommExecutor::MultiRingAllGather(const std::string &tag, DeviceMe
     std::vector<u32> tmpLevel03 = { 0, 4, 6, 7, 5, 1, 3, 2 }; // 环3
 
     // 填充8pring 多环的comm level0 四个环的顺序
-    multiRingOrder.push_back(tmpLevel00);
-    multiRingOrder.push_back(tmpLevel01);
-    multiRingOrder.push_back(tmpLevel02);
-    multiRingOrder.push_back(tmpLevel03);
+    multiRingsOrder.push_back(tmpLevel00);
+    multiRingsOrder.push_back(tmpLevel01);
+    multiRingsOrder.push_back(tmpLevel02);
+    multiRingsOrder.push_back(tmpLevel03);
 
 
     CHK_RET(AlgTemplateBase::ExecEmptyTask(inputMem, outputMem, stream, dispatcher_));
