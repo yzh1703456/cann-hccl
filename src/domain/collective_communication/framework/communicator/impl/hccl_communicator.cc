@@ -4026,7 +4026,7 @@ HcclResult HcclCommunicator::ExecOp(HcclCMDType opType, OpParam &opParam)
             // 用于判断图模式是否清零
             CHK_RET(algOperator->SetAivClearEnable(aivClearEnable_));
         }
-    
+    }
     // 头计数
     CHK_RET(StarsCounter(dispatcher_, opParam.stream, HEAD, opParam.aicpuUnfoldMode, retryEnable_));
     if (opParam.aicpuUnfoldMode) {
