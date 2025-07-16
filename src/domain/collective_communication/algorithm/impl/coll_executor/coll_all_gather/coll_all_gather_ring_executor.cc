@@ -65,7 +65,7 @@ HcclResult CollAllGatherRingExecutor::CalcLevel0CommInfo(TransportMemType inputT
     return HCCL_SUCCESS;
 }
 */
-
+//计算Level0层的通信平面信息，用于后续的通信链路建立
 HcclResult CollAllGatherRingExecutor::CalcLevel0CommInfo(TransportMemType inputType, TransportMemType outputType,
     std::vector<LevelNSubCommTransport>& opTransport)
 {
@@ -159,22 +159,27 @@ HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &e
             level1TempAlg = AlgTemplateRegistry::Instance().GetAlgTemplate(
                 TemplateType::TEMPLATE_ALL_GATHER_RING, dispatcher_);
             HCCL_INFO("allgather ring: using ring algo inter-server.");
+            HCCL_ERROR("1");
         } else if (algType_.algoLevel1 == AlgTypeLevel1::ALG_LEVEL1_NHR) {
             level1TempAlg = AlgTemplateRegistry::Instance().GetAlgTemplate(
                 TemplateType::TEMPLATE_ALL_GATHER_NHR, dispatcher_);
             HCCL_INFO("allgather ring: using nhr algo inter-server.");
+            HCCL_ERROR("2");
         } else if (algType_.algoLevel1 == AlgTypeLevel1::ALG_LEVEL1_NHR_V1) {
             level1TempAlg = AlgTemplateRegistry::Instance().GetAlgTemplate(
                 TemplateType::TEMPLATE_ALL_GATHER_NHRV1, dispatcher_);
             HCCL_INFO("allgather ring: using nhr_v1 algo inter-server.");
+            HCCL_ERROR("3");
         } else if (algType_.algoLevel1 == AlgTypeLevel1::ALG_LEVEL1_NB) {
             level1TempAlg = AlgTemplateRegistry::Instance().GetAlgTemplate(
                 TemplateType::TEMPLATE_ALL_GATHER_NB, dispatcher_);
             HCCL_INFO("allgather ring: using nonuniform-bruck algo inter-server.");
+            HCCL_ERROR("4");
         } else {
             level1TempAlg = AlgTemplateRegistry::Instance().GetAlgTemplate(
                 TemplateType::TEMPLATE_ALL_GATHER_RECURSIVE_HALVING_DOUBLING, dispatcher_);
             HCCL_INFO("allgather ring: using halving-doubling algo inter-server.");
+            HCCL_ERROR("5");
         }
         CHK_SMART_PTR_NULL(level1TempAlg);
 
