@@ -271,6 +271,11 @@ HcclResult CollAllGatherRingFor91093Executor::KernelRun(const OpParam &param, Ex
         multRingsSliceZero.push_back(dataSegsSlice);
     }
     std::vector<std::vector<Slice>> multRingsSlice;
+    //输出multRingsSliceZero
+    HCCL_ERROR("[CollAllGatherRingFor91093Executor][KernelRun]tag[%s] multRingsSliceZero size[%zu], inputMemSize[%llu]",
+        param.tag.c_str(), multRingsSliceZero.size(), inputMemSize);
+
+    
     for (u32 ringIndex = 0; ringIndex < multRingsSliceZero.size(); ringIndex++) {
         std::vector<Slice> level2DataSlice;
         CHK_RET(CalculateLevel2AllgatherSlice(inputMemSize, level0RankSize, level1RankSize, level2RankSize,
