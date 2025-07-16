@@ -82,7 +82,6 @@ u64 CollAllGatherRingExecutor::CalcLoopMaxCount(const u64 cclBuffSize, const u32
     return maxCountPerLoop;
 }
 
-
 HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &execMem)
 {
     HCCL_INFO("[CollAllGatherRingExecutor][KernelRun]The AllGatherRingExecutor starts.");
@@ -93,7 +92,7 @@ HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &e
             HCCL_ERROR_CODE(HCCL_E_PARA), param.DataDes.dataType), HCCL_E_PARA);
 
 
-    u32 ringNum = 8;
+    //u32 ringNum = 8;
     CHK_RET(CheckCommSize(COMM_LEVEL0, ringNum));
     SubCommInfo level0CommInfo = GetSubCommInfo(COMM_LEVEL0, COMM_INDEX_0);
     u32 commIndex = level0CommInfo.localRank;
