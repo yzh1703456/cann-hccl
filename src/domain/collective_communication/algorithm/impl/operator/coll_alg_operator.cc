@@ -70,8 +70,7 @@ HcclResult CollAlgOperator::CalcResRequest(const std::string& algName, const OpP
 
 HcclResult CollAlgOperator::Orchestrate(const std::string& algName, OpParam& param, AlgResourceResponse& algResource)
 {
-    //HCCL_INFO("[CollAlgOperator][Orchestrate]algName[%s]", algName.c_str());
-    HCCL_ERROR("[CollAlgOperator][Orchestrate]algName[%s]", algName.c_str());
+    HCCL_INFO("[CollAlgOperator][Orchestrate]algName[%s]", algName.c_str());
     if (executor_.get() == nullptr) {
         executor_ = CollAlgExecRegistry::Instance().GetAlgExec(algName, dispatcher_, topoMatcher_);
         CHK_PRT_RET(executor_.get() == nullptr,
