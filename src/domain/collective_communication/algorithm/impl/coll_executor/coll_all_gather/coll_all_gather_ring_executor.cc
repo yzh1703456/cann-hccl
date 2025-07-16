@@ -121,6 +121,10 @@ HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &e
     std::vector<Slice> dataSegsSlice; // 数据分成ranksize份，每份的起始偏移和大小
     std::vector<std::vector<Slice>> multRingsSliceZero; // 数据基于该rank上环0的偏移
     u32 sliceNum = level0RankSize;
+    //输出sliceNum
+    HCCL_ERROR("[CollAllGatherRingExecutor][KernelRun]tag[%s] sliceNum[%u], inputMemSize[%llu]",
+        param.tag.c_str(), sliceNum, inputMemSize);
+        
     CHK_RET(PrepareAllgatherSlice(sliceNum, inputMemSize, dataSegsSlice));
 
     multRingsSliceZero = PrepareMultiRingSlice(dataSegsSlice, param.tag);

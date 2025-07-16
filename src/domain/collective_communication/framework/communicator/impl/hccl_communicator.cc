@@ -3975,10 +3975,6 @@ HcclResult HcclCommunicator::ExecOp(HcclCMDType opType, OpParam &opParam)
         CHK_RET(algOperator->SetAivClearEnable(aivClearEnable_));
     }
     CHK_RET(algOperator->SelectAlg(opParam.tag, opParam, algName, newTag)); 
-    //输出algName
-    HCCL_ERROR("[HcclCommunicator][ExecOp] opType[%d], algName[%s], newTag[%s], tag[%s]",
-        static_cast<int>(opType), algName.c_str(), newTag.c_str(), opParam.tag.c_str());
-        
     newTag += !opParam.isZeroCopy ? "" : "_ZeroCopy"; // 使能零拷贝特性需要使用新的Tag，避免影响已有算法
     if (GetWorkflowMode() == HcclWorkflowMode::HCCL_WORKFLOW_MODE_OP_BASE && userRankSize_ > 1) {
         CHK_RET(CreateCommCCLbuffer());
