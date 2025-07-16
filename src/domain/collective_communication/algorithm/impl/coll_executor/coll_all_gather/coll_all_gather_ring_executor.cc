@@ -93,7 +93,7 @@ HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &e
             HCCL_ERROR_CODE(HCCL_E_PARA), param.DataDes.dataType), HCCL_E_PARA);
 
 
-    u32 ringNum = 4;
+    u32 ringNum = 8;
     CHK_RET(CheckCommSize(COMM_LEVEL0, ringNum));
     SubCommInfo level0CommInfo = GetSubCommInfo(COMM_LEVEL0, COMM_INDEX_0);
     u32 commIndex = level0CommInfo.localRank;
@@ -124,7 +124,7 @@ HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &e
     //输出sliceNum
     HCCL_ERROR("[CollAllGatherRingExecutor][KernelRun]tag[%s] sliceNum[%u], inputMemSize[%llu]",
         param.tag.c_str(), sliceNum, inputMemSize);
-        
+
     CHK_RET(PrepareAllgatherSlice(sliceNum, inputMemSize, dataSegsSlice));
 
     multRingsSliceZero = PrepareMultiRingSlice(dataSegsSlice, param.tag);
