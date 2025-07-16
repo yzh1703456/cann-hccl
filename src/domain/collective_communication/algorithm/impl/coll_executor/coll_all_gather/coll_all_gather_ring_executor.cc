@@ -35,8 +35,8 @@ HcclResult CollAllGatherRingExecutor::CalcCommInfo(std::vector<LevelNSubCommTran
     TransportMemType inputType = TransportMemType::RESERVED;
     TransportMemType outputType = TransportMemType::RESERVED;
     CHK_RET(CalcTransportMemType(inputType, outputType));
-    CHK_RET(CalcLevel0CommInfo(inputType, outputType, opTransport));
-    CHK_RET(CalcLevel1CommInfo(inputType, outputType, opTransport));
+    //CHK_RET(CalcLevel0CommInfo(inputType, outputType, opTransport));
+    //CHK_RET(CalcLevel1CommInfo(inputType, outputType, opTransport));
     return HCCL_SUCCESS;
 }
 
