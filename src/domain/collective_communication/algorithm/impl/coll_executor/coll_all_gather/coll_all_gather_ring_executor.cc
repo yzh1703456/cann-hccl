@@ -141,60 +141,60 @@ HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &e
 
     HCCL_INFO("all gather 8PringHD level0 run success");
 
-    //  第三步， AI server 间 recursive halving doubling all gather
-    u64 hdSize = 0;
-    std::vector<u32> nicList = const_cast<std::vector<u32>&>(topoAttr_.nicList);
-    std::vector<u32>::iterator iterNic = std::find(nicList.begin(), nicList.end(), topoAttr_.devicePhyId);
-    if (iterNic != nicList.end()) {
-        hdSize = inputMemSize * level0RankSize;
-    }
-    u64 hdCount = hdSize / perDataSize;
-    CHK_PRT_RET(hdCount == 0,
-        HCCL_ERROR("[CollAllGatherRingExecutor][KernelRun]hdCount[%llu] is invalid", hdCount), HCCL_E_PARA);
-    bool isMultiNic = topoType_ == TopoType::TOPO_TYPE_8P_RING && nicList.size() != DEVICE_EIGHT;
-    bool innRunRet = isMultiNic && (iterNic == nicList.end());
-    if (!innRunRet) { // 满足以下条件, 不做server间通信: 1. 8P ring的拓扑 2. 网口不满配 3. 当前device不出网口
-        std::unique_ptr<AlgTemplateBase> level1TempAlg;
-        if (algType_.algoLevel1 == AlgTypeLevel1::ALG_LEVEL1_RING) {
-            level1TempAlg = AlgTemplateRegistry::Instance().GetAlgTemplate(
-                TemplateType::TEMPLATE_ALL_GATHER_RING, dispatcher_);
-            HCCL_INFO("allgather ring: using ring algo inter-server.");
-            HCCL_ERROR("1");
-        } else if (algType_.algoLevel1 == AlgTypeLevel1::ALG_LEVEL1_NHR) {
-            level1TempAlg = AlgTemplateRegistry::Instance().GetAlgTemplate(
-                TemplateType::TEMPLATE_ALL_GATHER_NHR, dispatcher_);
-            HCCL_INFO("allgather ring: using nhr algo inter-server.");
-            HCCL_ERROR("2");
-        } else if (algType_.algoLevel1 == AlgTypeLevel1::ALG_LEVEL1_NHR_V1) {
-            level1TempAlg = AlgTemplateRegistry::Instance().GetAlgTemplate(
-                TemplateType::TEMPLATE_ALL_GATHER_NHRV1, dispatcher_);
-            HCCL_INFO("allgather ring: using nhr_v1 algo inter-server.");
-            HCCL_ERROR("3");
-        } else if (algType_.algoLevel1 == AlgTypeLevel1::ALG_LEVEL1_NB) {
-            level1TempAlg = AlgTemplateRegistry::Instance().GetAlgTemplate(
-                TemplateType::TEMPLATE_ALL_GATHER_NB, dispatcher_);
-            HCCL_INFO("allgather ring: using nonuniform-bruck algo inter-server.");
-            HCCL_ERROR("4");
-        } else {
-            level1TempAlg = AlgTemplateRegistry::Instance().GetAlgTemplate(
-                TemplateType::TEMPLATE_ALL_GATHER_RECURSIVE_HALVING_DOUBLING, dispatcher_);
-            HCCL_INFO("allgather ring: using halving-doubling algo inter-server.");
-            HCCL_ERROR("5");
-        }
-        CHK_SMART_PTR_NULL(level1TempAlg);
+    // //  第三步， AI server 间 recursive halving doubling all gather
+    // u64 hdSize = 0;
+    // std::vector<u32> nicList = const_cast<std::vector<u32>&>(topoAttr_.nicList);
+    // std::vector<u32>::iterator iterNic = std::find(nicList.begin(), nicList.end(), topoAttr_.devicePhyId);
+    // if (iterNic != nicList.end()) {
+    //     hdSize = inputMemSize * level0RankSize;
+    // }
+    // u64 hdCount = hdSize / perDataSize;
+    // CHK_PRT_RET(hdCount == 0,
+    //     HCCL_ERROR("[CollAllGatherRingExecutor][KernelRun]hdCount[%llu] is invalid", hdCount), HCCL_E_PARA);
+    // bool isMultiNic = topoType_ == TopoType::TOPO_TYPE_8P_RING && nicList.size() != DEVICE_EIGHT;
+    // bool innRunRet = isMultiNic && (iterNic == nicList.end());
+    // if (!innRunRet) { // 满足以下条件, 不做server间通信: 1. 8P ring的拓扑 2. 网口不满配 3. 当前device不出网口
+    //     std::unique_ptr<AlgTemplateBase> level1TempAlg;
+    //     if (algType_.algoLevel1 == AlgTypeLevel1::ALG_LEVEL1_RING) {
+    //         level1TempAlg = AlgTemplateRegistry::Instance().GetAlgTemplate(
+    //             TemplateType::TEMPLATE_ALL_GATHER_RING, dispatcher_);
+    //         HCCL_INFO("allgather ring: using ring algo inter-server.");
+    //         HCCL_ERROR("1");
+    //     } else if (algType_.algoLevel1 == AlgTypeLevel1::ALG_LEVEL1_NHR) {
+    //         level1TempAlg = AlgTemplateRegistry::Instance().GetAlgTemplate(
+    //             TemplateType::TEMPLATE_ALL_GATHER_NHR, dispatcher_);
+    //         HCCL_INFO("allgather ring: using nhr algo inter-server.");
+    //         HCCL_ERROR("2");
+    //     } else if (algType_.algoLevel1 == AlgTypeLevel1::ALG_LEVEL1_NHR_V1) {
+    //         level1TempAlg = AlgTemplateRegistry::Instance().GetAlgTemplate(
+    //             TemplateType::TEMPLATE_ALL_GATHER_NHRV1, dispatcher_);
+    //         HCCL_INFO("allgather ring: using nhr_v1 algo inter-server.");
+    //         HCCL_ERROR("3");
+    //     } else if (algType_.algoLevel1 == AlgTypeLevel1::ALG_LEVEL1_NB) {
+    //         level1TempAlg = AlgTemplateRegistry::Instance().GetAlgTemplate(
+    //             TemplateType::TEMPLATE_ALL_GATHER_NB, dispatcher_);
+    //         HCCL_INFO("allgather ring: using nonuniform-bruck algo inter-server.");
+    //         HCCL_ERROR("4");
+    //     } else {
+    //         level1TempAlg = AlgTemplateRegistry::Instance().GetAlgTemplate(
+    //             TemplateType::TEMPLATE_ALL_GATHER_RECURSIVE_HALVING_DOUBLING, dispatcher_);
+    //         HCCL_INFO("allgather ring: using halving-doubling algo inter-server.");
+    //         HCCL_ERROR("5");
+    //     }
+    //     CHK_SMART_PTR_NULL(level1TempAlg);
 
-        //  此处虽然带入inputMem作为scratch mem, 但inputMem 不能被使用
-        CHK_RET(level1TempAlg->Prepare(execMem.outputMem, execMem.outputMem, execMem.inputMem, hdCount,
-            param.DataDes.dataType, param.stream, HCCL_REDUCE_RESERVED, INVALID_VALUE_RANKID,
-            std::vector<Slice>(COMM_INDEX_0), 0));
+    //     //  此处虽然带入inputMem作为scratch mem, 但inputMem 不能被使用
+    //     CHK_RET(level1TempAlg->Prepare(execMem.outputMem, execMem.outputMem, execMem.inputMem, hdCount,
+    //         param.DataDes.dataType, param.stream, HCCL_REDUCE_RESERVED, INVALID_VALUE_RANKID,
+    //         std::vector<Slice>(COMM_INDEX_0), 0));
 
-        u32 rankSize = level1CommInfo.localRankSize;
-        CHK_RET(level1TempAlg->RegisterProfiler((rankSize << PROF_RANKSIZE_OFFSET_OF_PLANEID) + serverIndex,
-            PROF_STAGE_2, HCCL_EXEC_STEP_NOT_SET, param.stream));
+    //     u32 rankSize = level1CommInfo.localRankSize;
+    //     CHK_RET(level1TempAlg->RegisterProfiler((rankSize << PROF_RANKSIZE_OFFSET_OF_PLANEID) + serverIndex,
+    //         PROF_STAGE_2, HCCL_EXEC_STEP_NOT_SET, param.stream));
 
-        CHK_RET(RunTemplate(level1TempAlg, level1CommInfo));
-    }
-    HCCL_INFO("all gather 8PringHD level1 run success");
+    //     CHK_RET(RunTemplate(level1TempAlg, level1CommInfo));
+    // }
+    // HCCL_INFO("all gather 8PringHD level1 run success");
     return HCCL_SUCCESS;
 }
 
