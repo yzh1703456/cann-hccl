@@ -3963,8 +3963,7 @@ HcclResult HcclCommunicator::ExecOp(HcclCMDType opType, OpParam &opParam)
     CHK_RET(PrepareZeroCopy(opType, opParam));
     std::unique_ptr<CollAlgOperator> algOperator = implAlg_->GetAlgOperator(opType);
     CHK_SMART_PTR_NULL(algOperator);
-    //输出algOperator的算法类型
-    HCCL_ERROR("[HcclCommunicator][ExecOp] opType[%d], algOperator[%s]", opType, algOperator->GetAlgTypeStr().c_str());
+
     // 算法选择
     std::string algName;
     std::string newTag;
@@ -3977,6 +3976,7 @@ HcclResult HcclCommunicator::ExecOp(HcclCMDType opType, OpParam &opParam)
         CHK_RET(algOperator->SetAivClearEnable(aivClearEnable_));
     }
     CHK_RET(algOperator->SelectAlg(opParam.tag, opParam, algName, newTag)); 
+
     newTag += !opParam.isZeroCopy ? "" : "_ZeroCopy"; // 使能零拷贝特性需要使用新的Tag，避免影响已有算法
     if (GetWorkflowMode() == HcclWorkflowMode::HCCL_WORKFLOW_MODE_OP_BASE && userRankSize_ > 1) {
         CHK_RET(CreateCommCCLbuffer());
@@ -4026,10 +4026,11 @@ HcclResult HcclCommunicator::ExecOp(HcclCMDType opType, OpParam &opParam)
             // 用于判断图模式是否清零
             CHK_RET(algOperator->SetAivClearEnable(aivClearEnable_));
         }
-    }
+    
     // 头计数
     CHK_RET(StarsCounter(dispatcher_, opParam.stream, HEAD, opParam.aicpuUnfoldMode, retryEnable_));
     if (opParam.aicpuUnfoldMode) {
+        HCCL_ERROR("1");
         isInplaceStatus_ = 0;
         inPlaceSupportRetryStatus_ = InplaceSupportRetryStatus::INPLACE_STATUS_END;
         // algOperator->SupportRetryWithInplaceCheck 依赖 algOperator->SetRetryEnable 才能正确返回是否支持inplace
