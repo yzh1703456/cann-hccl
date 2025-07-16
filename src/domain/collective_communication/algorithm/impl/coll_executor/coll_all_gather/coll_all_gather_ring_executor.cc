@@ -35,7 +35,7 @@ HcclResult CollAllGatherRingExecutor::CalcCommInfo(std::vector<LevelNSubCommTran
     TransportMemType inputType = TransportMemType::RESERVED;
     TransportMemType outputType = TransportMemType::RESERVED;
     CHK_RET(CalcTransportMemType(inputType, outputType));
-    CHK_RET(CalcLevel0CommInfo(inputType, outputType, opTransport));
+    //CHK_RET(CalcLevel0CommInfo(inputType, outputType, opTransport));
     CHK_RET(CalcLevel1CommInfo(inputType, outputType, opTransport));
     return HCCL_SUCCESS;
 }
@@ -92,7 +92,7 @@ HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &e
             HCCL_ERROR_CODE(HCCL_E_PARA), param.DataDes.dataType), HCCL_E_PARA);
 
             
-    u32 ringNum = 8;
+    u32 ringNum = 4;
     CHK_RET(CheckCommSize(COMM_LEVEL0, ringNum));
     SubCommInfo level0CommInfo = GetSubCommInfo(COMM_LEVEL0, COMM_INDEX_0);
     u32 commIndex = level0CommInfo.localRank;
@@ -111,7 +111,7 @@ HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &e
     CHK_SMART_PTR_NULL(dstMem);
 
     HcclResult ret = HcclD2DMemcpyAsync(dispatcher_, dstMem, execMem.inputMem, const_cast<Stream&>(param.stream));
-    CHK_PRT_RET(ret == HCCL_SUCCESS,
+    CHK_PRT_RET(ret != HCCL_SUCCESS,
         HCCL_ERROR("[CollAllGatherRingExecutor][KernelRun]all gather 8PringHD memcpy Failed, "
             "Offset[%llu], Size[%llu]", baseOffset + level0Offset, inputMemSize), ret);
 
