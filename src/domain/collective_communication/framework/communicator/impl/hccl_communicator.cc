@@ -3963,6 +3963,8 @@ HcclResult HcclCommunicator::ExecOp(HcclCMDType opType, OpParam &opParam)
     CHK_RET(PrepareZeroCopy(opType, opParam));
     std::unique_ptr<CollAlgOperator> algOperator = implAlg_->GetAlgOperator(opType);
     CHK_SMART_PTR_NULL(algOperator);
+    //输出algOperator的算法类型
+    HCCL_ERROR("[HcclCommunicator][ExecOp] opType[%d], algOperator[%s]", opType, algOperator->GetAlgTypeStr().c_str());
     // 算法选择
     std::string algName;
     std::string newTag;
