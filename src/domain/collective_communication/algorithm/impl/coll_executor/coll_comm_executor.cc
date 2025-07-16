@@ -1816,7 +1816,7 @@ std::vector<std::vector<Slice> > CollCommExecutor::PrepareMultiRingSlice(const s
                 u32 nicPosition = distance(nicList.begin(), iterRank);
                 for (u32 chunkIdx = 0; chunkIdx < chunkSize; chunkIdx++) {
                     //Slice tempSlice = mutliSegsSlices[nicPosition * chunkSize + chunkIdx][ringIndex];
-                    Slice tempSlice = mutliSegsSlices[segsIndex+11][ringIndex];
+                    Slice tempSlice = mutliSegsSlices[segsIndex][ringIndex];
                     singleRingSlices.push_back(tempSlice);
                 }
             }

@@ -65,7 +65,8 @@ HcclResult AllGatherOperator::SelectAlg(const std::string& tag, const OpParam& p
         newTag = tag + level1Iter->second + algName;
     }
     newTag += (param.aicpuUnfoldMode ? "_device" : "_host");
-    HCCL_INFO("[SelectAlg] all_gather newTag is [%s]", newTag.c_str());
+    //HCCL_INFO("[SelectAlg] all_gather newTag is [%s]", newTag.c_str());
+    HCCL_ERROR("[SelectAlg] all_gather newTag is [%s]", newTag.c_str());
     return ret;
 }
 
