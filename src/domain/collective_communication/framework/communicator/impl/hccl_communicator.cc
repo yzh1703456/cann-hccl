@@ -3974,7 +3974,7 @@ HcclResult HcclCommunicator::ExecOp(HcclCMDType opType, OpParam &opParam)
         // 用于判断图模式是否清零
         CHK_RET(algOperator->SetAivClearEnable(aivClearEnable_));
     }
-    CHK_RET(algOperator->SelectAlg(opParam.tag, opParam, algName, newTag));
+    CHK_RET(algOperator->SelectAlg(opParam.tag, opParam, algName, newTag)); 
     newTag += !opParam.isZeroCopy ? "" : "_ZeroCopy"; // 使能零拷贝特性需要使用新的Tag，避免影响已有算法
     if (GetWorkflowMode() == HcclWorkflowMode::HCCL_WORKFLOW_MODE_OP_BASE && userRankSize_ > 1) {
         CHK_RET(CreateCommCCLbuffer());
