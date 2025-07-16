@@ -110,9 +110,8 @@ HcclResult CollAllGatherRingExecutor::KernelRun(const OpParam &param, ExecMem &e
     DeviceMem dstMem = execMem.outputMem.range(baseOffset + level0Offset, inputMemSize);
     CHK_SMART_PTR_NULL(dstMem);
 
-    //HcclResult ret = HcclD2DMemcpyAsync(dispatcher_, dstMem, execMem.inputMem, const_cast<Stream&>(param.stream));
-    HcclResult ret = 0;
-    CHK_PRT_RET(ret != HCCL_SUCCESS,
+    HcclResult ret = HcclD2DMemcpyAsync(dispatcher_, dstMem, execMem.inputMem, const_cast<Stream&>(param.stream));
+    CHK_PRT_RET(ret == HCCL_SUCCESS,
         HCCL_ERROR("[CollAllGatherRingExecutor][KernelRun]all gather 8PringHD memcpy Failed, "
             "Offset[%llu], Size[%llu]", baseOffset + level0Offset, inputMemSize), ret);
 
