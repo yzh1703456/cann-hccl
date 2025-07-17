@@ -74,7 +74,7 @@ HcclResult AllGatherOperator::SelectAlgforNew(const OpParam& param, std::string&
 {
 
     algName = "AllGatherRingFor91093Executor";
-    HCCL_INFO("[SelectAlgfor91093] Current topoType_ = [%d], serverNum = [%u], deviceNumPerAggregation = [%u], workflowMode = [%d], aicpuUnfoldMode = [%d]",
+    HCCL_ERROR("[SelectAlgfor91093] Current topoType_ = [%d], serverNum = [%u], deviceNumPerAggregation = [%u], workflowMode = [%d], aicpuUnfoldMode = [%d]",
         topoType_, serverNum_, deviceNumPerAggregation_, workflowMode_, param.aicpuUnfoldMode);
 
     HCCL_INFO("[SelectAlgforRing] all_gather SelectAlgforNew is algName [%s]", algName.c_str());
