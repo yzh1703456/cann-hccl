@@ -3969,7 +3969,6 @@ HcclResult HcclCommunicator::ExecOp(HcclCMDType opType, OpParam &opParam)
     std::string newTag;
     if (opParam.aicpuUnfoldMode) {
         // 用于inplace支持重执行判断
-        HCCL_ERROR("aicpuUnfold Mode is online");
         CHK_RET(algOperator->SetRetryEnable(retryEnable_));
     }
     if (GetExternalInputHcclAivMode()) {
@@ -4030,7 +4029,7 @@ HcclResult HcclCommunicator::ExecOp(HcclCMDType opType, OpParam &opParam)
     }
     // 头计数
     CHK_RET(StarsCounter(dispatcher_, opParam.stream, HEAD, opParam.aicpuUnfoldMode, retryEnable_));
-    if (!opParam.aicpuUnfoldMode) {
+    if (opParam.aicpuUnfoldMode) {
     //if (opParam.aicpuUnfoldMode) {
         isInplaceStatus_ = 0;
         inPlaceSupportRetryStatus_ = InplaceSupportRetryStatus::INPLACE_STATUS_END;
