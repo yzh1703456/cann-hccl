@@ -4029,8 +4029,8 @@ HcclResult HcclCommunicator::ExecOp(HcclCMDType opType, OpParam &opParam)
     }
     // 头计数
     CHK_RET(StarsCounter(dispatcher_, opParam.stream, HEAD, opParam.aicpuUnfoldMode, retryEnable_));
-    if (opParam.aicpuUnfoldMode) {
-        HCCL_ERROR("1");
+    if (!opParam.aicpuUnfoldMode) {
+    //if (opParam.aicpuUnfoldMode) {
         isInplaceStatus_ = 0;
         inPlaceSupportRetryStatus_ = InplaceSupportRetryStatus::INPLACE_STATUS_END;
         // algOperator->SupportRetryWithInplaceCheck 依赖 algOperator->SetRetryEnable 才能正确返回是否支持inplace
