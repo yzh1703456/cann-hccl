@@ -1596,8 +1596,8 @@ std::vector<std::vector<u32>>  CollCommExecutor::GetRingsOrderByTopoType(u32 ran
         //每个环的排序是按照设备物理ID进行的
         std::vector<u32> tmpLevel00 = { 0, 1, 2, 6, 5, 4, 7, 3 }; // 环0
         std::vector<u32> tmpLevel01 = { 0, 3, 7, 4, 5, 6, 2, 1 }; // 环1
-        std::vector<u32> tmpLevel02 = { 0, 2, 3, 1, 5, 7, 6, 4 }; // 环2
-        std::vector<u32> tmpLevel03 = { 0, 4, 6, 7, 5, 1, 3, 2 }; // 环3
+        // std::vector<u32> tmpLevel02 = { 0, 2, 3, 1, 5, 7, 6, 4 }; // 环2
+        // std::vector<u32> tmpLevel03 = { 0, 4, 6, 7, 5, 1, 3, 2 }; // 环3
 
         // std::vector<u32> tmpLevel00 = { 0, 1, 2, 3 }; // 环0
         // std::vector<u32> tmpLevel01 = { 0, 3, 2, 1 }; // 环1
@@ -1607,8 +1607,8 @@ std::vector<std::vector<u32>>  CollCommExecutor::GetRingsOrderByTopoType(u32 ran
         // 填充8pring 多环的comm level0 四个环的顺序
         multiRingOrder.push_back(tmpLevel00);
         multiRingOrder.push_back(tmpLevel01);
-        multiRingOrder.push_back(tmpLevel02);
-        multiRingOrder.push_back(tmpLevel03);
+        // multiRingOrder.push_back(tmpLevel02);
+        // multiRingOrder.push_back(tmpLevel03);
     } else if (topoType == TopoType::TOPO_TYPE_NP_DOUBLE_RING) { // 2 ring 场景
         std::vector<u32> tmpLevel00;   // 环0
         std::vector<u32> tmpLevel01;  // 环1
