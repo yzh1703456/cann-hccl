@@ -72,7 +72,7 @@ HcclResult AllGatherOperator::SelectAlg(const std::string& tag, const OpParam& p
 //直接选择我们的算法
 HcclResult AllGatherOperator::SelectAlgforNew(const OpParam& param, std::string& algName)
 {
-    algName = "AllGatherRingFor91093Executor";
+    algName = "AllGatherRingForExecutor";
     HCCL_ERROR("[SelectAlgfor91093] Current topoType_ = [%d], serverNum = [%u], deviceNumPerAggregation = [%u], workflowMode = [%d], aicpuUnfoldMode = [%d]",
         topoType_, serverNum_, deviceNumPerAggregation_, workflowMode_, param.aicpuUnfoldMode);
 
