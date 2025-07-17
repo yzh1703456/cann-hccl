@@ -72,8 +72,17 @@ HcclResult AllGatherOperator::SelectAlg(const std::string& tag, const OpParam& p
 //直接选择我们的算法
 HcclResult AllGatherOperator::SelectAlgforNew(const OpParam& param, std::string& algName)
 {
-
     algName = "AllGatherRingFor91093Executor";
+
+    if(workflowMode_ == HcclWorkflowMode::HCCL_WORKFLOW_MODE_OP_BASE)
+    {
+       HCCL_ERROR("HCCL_WORKFLOW_MODE_OP_BASE");
+    }
+    else if(workflowMode_ == HcclWorkflowMode::HCCL_WORKFLOW_MODE_OPS_KERNEL_INFO_LIB)
+    {
+        HCCL_ERROR("HCCL_WORKFLOW_MODE_OPS_KERNEL_INFO_LIB");
+    }
+    
     HCCL_ERROR("[SelectAlgfor91093] Current topoType_ = [%d], serverNum = [%u], deviceNumPerAggregation = [%u], workflowMode = [%d], aicpuUnfoldMode = [%d]",
         topoType_, serverNum_, deviceNumPerAggregation_, workflowMode_, param.aicpuUnfoldMode);
 
