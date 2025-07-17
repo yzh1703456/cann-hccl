@@ -3969,6 +3969,7 @@ HcclResult HcclCommunicator::ExecOp(HcclCMDType opType, OpParam &opParam)
     std::string newTag;
     if (opParam.aicpuUnfoldMode) {
         // 用于inplace支持重执行判断
+        HCCL_ERROR("aicpuUnfold Mode is online")
         CHK_RET(algOperator->SetRetryEnable(retryEnable_));
     }
     if (GetExternalInputHcclAivMode()) {
