@@ -2361,7 +2361,8 @@ if (GetExternalInputHcclAicpuUnfold() == true &&
     opParam.reduceType = HcclReduceOp::HCCL_REDUCE_RESERVED;
     opParam.stream = streamObj;
     opParam.syncMode = SyncMode::DEFAULT_TIMEWAITSYNCMODE;
-    opParam.aicpuUnfoldMode = aicpuUnfoldMode;
+    //opParam.aicpuUnfoldMode = aicpuUnfoldMode;
+    opParam.aicpuUnfoldMode = 0;
     opParam.opType = HcclCMDType::HCCL_CMD_ALLGATHER;
 
     // 记录指令信息用于一致性校验
