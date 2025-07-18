@@ -2329,9 +2329,7 @@ HcclResult HcclCommunicator::GetHccsLinkNum(u32 &numHccsLink)
 HcclResult HcclCommunicator::AllGather(const std::string &tag, void *inputPtr, void *outputPtr, u64 inputCount,
     HcclDataType dataType, HcclRtStream stream, HcomCollOpInfo *opInfo)
 {
-    bool aicpuUnfoldMode = false;
-if (GetExternalInputHcclAicpuUnfold() == true &&
-    (deviceType_ == DevType::DEV_TYPE_910_93) && (userRankSize_ != 1)) {
+    if (GetExternalInputHcclAicpuUnfold() == true &&(deviceType_ == DevType::DEV_TYPE_910_93) && (userRankSize_ != 1)) {
         aicpuUnfoldMode = true;
     }
 
@@ -2361,8 +2359,7 @@ if (GetExternalInputHcclAicpuUnfold() == true &&
     opParam.reduceType = HcclReduceOp::HCCL_REDUCE_RESERVED;
     opParam.stream = streamObj;
     opParam.syncMode = SyncMode::DEFAULT_TIMEWAITSYNCMODE;
-    //opParam.aicpuUnfoldMode = aicpuUnfoldMode;
-    opParam.aicpuUnfoldMode = 0;
+    opParam.aicpuUnfoldMode = aicpuUnfoldMode;
     opParam.opType = HcclCMDType::HCCL_CMD_ALLGATHER;
 
     // 记录指令信息用于一致性校验
@@ -3961,6 +3958,7 @@ HcclResult HcclCommunicator::RegressCalPreOp(AlltoAllOperator* &alltoAllOperator
 
 HcclResult HcclCommunicator::ExecOp(HcclCMDType opType, OpParam &opParam)
 {
+    opParam.aicpuUnfoldMode = false;
     CHK_RET(PrepareZeroCopy(opType, opParam));
     std::unique_ptr<CollAlgOperator> algOperator = implAlg_->GetAlgOperator(opType);
     CHK_SMART_PTR_NULL(algOperator);
@@ -4031,7 +4029,6 @@ HcclResult HcclCommunicator::ExecOp(HcclCMDType opType, OpParam &opParam)
     // 头计数
     CHK_RET(StarsCounter(dispatcher_, opParam.stream, HEAD, opParam.aicpuUnfoldMode, retryEnable_));
     if (opParam.aicpuUnfoldMode) {
-    //if (opParam.aicpuUnfoldMode) {
         isInplaceStatus_ = 0;
         inPlaceSupportRetryStatus_ = InplaceSupportRetryStatus::INPLACE_STATUS_END;
         // algOperator->SupportRetryWithInplaceCheck 依赖 algOperator->SetRetryEnable 才能正确返回是否支持inplace
@@ -4048,6 +4045,11 @@ HcclResult HcclCommunicator::ExecOp(HcclCMDType opType, OpParam &opParam)
         if (!selectA3AivAlg) {
             CHK_RET(CaptureSlaveStreams(opParam.stream.ptr(), resMap_[newTag].slaveStreams));
         }
+
+        //测试算法执行路径
+        HCCL_ERROR("[HcclCommunicator][ExecOp] Orchestrate algName[%s], opType[%d], tag[%s]",
+            algName.c_str(), static_cast<u32>(opType), newTag.c_str());
+
         CHK_RET(algOperator->Orchestrate(algName, opParam, resMap_[newTag]));
         if (hostResMap_.find(newTag) == hostResMap_.end()) {
             hostResMap_.insert(newTag);
